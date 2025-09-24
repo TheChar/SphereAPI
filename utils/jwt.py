@@ -1,3 +1,0 @@
-class jwt:
-    def generateToken():
-        

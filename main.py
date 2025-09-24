@@ -1,18 +1,24 @@
 from fastapi import FastAPI, HTTPException, status
 import psycopg2
 import os
+from datetime import datetime as dt
+from datetime import timedelta
 from passlib.context import CryptContext
+import jwt
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = FastAPI()
 
 pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
 conn = psycopg2.connect(
-    hostname=os.environ['DB_HOSTNAME'],
-    dbname=os.environ['DB_NAME'],
-    username=os.environ['DB_USERNAME'],
-    password=os.environ['DB_PASSWORD'],
-    port=os.environ['DB_PORT']
+    hostname=os.getenv('DB_HOSTNAME'),
+    dbname=os.getenv('DB_NAME'),
+    username=os.getenv('DB_USERNAME'),
+    password=os.getenv('DB_PASSWORD'),
+    port=os.getenv('DB_PORT')
 )
 
 """Root route returns hello world"""
@@ -21,8 +27,8 @@ async def root():
     return {"message": "Hello World!!"}
 
 """Login route to assign JWT to client"""
-@app.get('/login')
-async def login(username: str, password: str):
+@app.get('/getToken')
+async def getToken(username: str, password: str):
     params = {
         'username': username
     }
@@ -44,7 +50,11 @@ async def login(username: str, password: str):
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    #get a new token and give to user
+    data = {
+        "sub": username,
+        "exp": dt.now() + timedelta(minutes=os.getenv('EXPIRE_IN_MIN'))
+    }
+    token = jwt.encode(data, os.getenv('SECRET'), os.getenv('ALGORITHM'))
 
 """Route to create a new user (for future clients)"""
 @app.post('/createUser')
