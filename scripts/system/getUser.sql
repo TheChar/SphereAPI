@@ -5,4 +5,4 @@ SELECT
     UT.Type AS Type
 FROM Users U
 LEFT JOIN UserType UT ON U.UserTypeID = UT.UserTypeID
-WHERE Username=%(username)
+WHERE Username=%(username)s

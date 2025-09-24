@@ -1,30 +1,66 @@
 from fastapi import FastAPI, HTTPException, status
 import psycopg2
+from psycopg2 import sql
 import os
 from datetime import datetime as dt
 from datetime import timedelta
 from passlib.context import CryptContext
 import jwt
 from dotenv import load_dotenv
+from .routers import test
 
 load_dotenv()
 
 app = FastAPI()
+app.include_router(test.router)
 
 pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
 conn = psycopg2.connect(
-    hostname=os.getenv('DB_HOSTNAME'),
+    host=os.getenv('DB_HOSTNAME'),
     dbname=os.getenv('DB_NAME'),
-    username=os.getenv('DB_USERNAME'),
+    user=os.getenv('DB_USERNAME'),
     password=os.getenv('DB_PASSWORD'),
     port=os.getenv('DB_PORT')
 )
 
-"""Root route returns hello world"""
-@app.get('/')
-async def root():
-    return {"message": "Hello World!!"}
+@app.get('/flushpg')
+async def flush(dbname:str):
+    conn.autocommit = True
+
+    with open('scripts/dropDatabase.sql') as f:
+        query = f.read()
+        f.close()
+
+    query = sql.SQL(query).format(sql.Identifier(dbname))
+
+    with conn.cursor() as cur:
+        cur.execute(query)
+    conn.autocommit = False
+
+@app.get('/initializeAPI')
+async def initAPI():
+    #create database here
+    conn.autocommit = True
+    params = {
+        "dbname": "api_system"
+    }
+    with open('scripts/createDatabase.sql') as f:
+        sql = f.read()
+        f.close()
+    
+    with conn.cursor() as cur:
+        cur.execute(sql, params)
+    conn.autocommit = False
+
+    with open('scripts/system/createStructure.sql') as f:
+        sql = f.read()
+
+    with conn.cursor() as cur:
+        cur.execute(sql)
+        res = cur.fetchall()
+
+    return res
 
 """Login route to assign JWT to client"""
 @app.get('/getToken')
