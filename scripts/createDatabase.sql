@@ -1,1 +1,1 @@
-CREATE DATABASE %(dbname)s;
+CREATE DATABASE {dbname};

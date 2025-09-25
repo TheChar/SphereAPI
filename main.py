@@ -7,12 +7,13 @@ from datetime import timedelta
 from passlib.context import CryptContext
 import jwt
 from dotenv import load_dotenv
-from .routers import test
+from .routers import test, databases
 
 load_dotenv()
 
 app = FastAPI()
 app.include_router(test.router)
+app.include_router(databases.router)
 
 pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
