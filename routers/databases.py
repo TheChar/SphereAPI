@@ -1,12 +1,14 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException, status
 from psycopg2 import sql
 import psycopg2
 import os
-from ..dbConn import conn as ogConn
+from ..dbConn import getConn
 
 router = APIRouter(
     prefix='/databases'
 )
+
+ogConn = getConn('postgres')
 
 """Creates a database with given name
 
@@ -86,3 +88,24 @@ async def listDatabases():
         res = cur.fetchall()
     
     return res
+
+
+# @router.put('/initialize')
+# async def initDatabase(name:str):
+#     if not name.isalpha():
+#         raise HTTPException(
+#             status_code=status.HTTP_406_NOT_ACCEPTABLE,
+#             detail="New databases must only contain characters a-z lowercase"
+#         )
+    
+#     path = f'../scripts/{name}'
+    
+#     if os.path.isdir(path):
+#         raise HTTPException(
+#             status_code=status.HTTP_409_CONFLICT,
+#             detail=f"This database already exists. Remove with /databases/remove/{name}"
+#         )
+
+#     os.mkdir(path)
+
+#     with open(f"{path}/createStructure.sql", 'x') as f:
