@@ -1,3 +1,3 @@
-INSERT INTO Users (Username, HashedPassword)
-VALUES (%(username)s, %(hashedpassword)s)
+INSERT INTO Users (Username, HashedPassword, ExpireMinutes)
+VALUES (%(username)s, %(hashedpassword)s, %(expmins)s)
 RETURNING UserID, Username;

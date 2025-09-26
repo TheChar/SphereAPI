@@ -10,6 +10,17 @@ router = APIRouter(
 
 pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
+#Exceptions
+unauthorized = HTTPException(
+    status_code=status.HTTP_401_UNAUTHORIZED,
+    detail="You do not have permission to access this function"
+)
+
+admin_infringement = HTTPException(
+    status_code=status.HTTP_403_FORBIDDEN,
+    detail="You cannot remove priveleges from admin"
+)
+
 
 """Initializes the system databases. Needs security foundation support
 
@@ -23,16 +34,35 @@ async def initialize():
     conn = getConn('system')
     with open('scripts/system/createStructure.sql') as f:
         query = f.read()
+        f.close()
 
     with conn.cursor() as cur:
         cur.execute(query)
-        res = cur.fetchall()
+        res1 = cur.fetchall()
+        cur.close()
+
+    with open('scripts/system/addUser.sql') as f:
+        query = f.read()
+        f.close()
+
+    params = {
+        "username": "admin",
+        "hashedpassword": pwd_context.hash('password'),
+        "expmins": 30
+    }
+
+    with conn.cursor() as cur:
+        cur.execute(query, params)
+        res2 = cur.fetchone()
+        cur.close()
+
+    #Add role bindings for admin ==============================================================================================
 
     conn.commit()
 
     conn.close()
 
-    return res
+    return (res1, res2)
 
 
 """Adds a user to the system
@@ -45,20 +75,25 @@ async def addUser(token: str, username:str, password:str):
     data = security.validateToken(token)
 
     #implement role protections here
+    if not security.validateRole(data['sub'], 'put', 'system/addUser'):
+        raise unauthorized
     
     conn = getConn('system')
 
     params = {
         "username": username,
-        "hashedpassword": pwd_context.hash(password)
+        "hashedpassword": pwd_context.hash(password),
+        "expmins": 30
     }
 
     with open('scripts/system/addUser.sql') as f:
         query = f.read()
+        f.close()
 
     with conn.cursor() as cur:
         cur.execute(query, params)
         res = cur.fetchall()
+        cur.close()
 
     conn.commit()
 
@@ -74,7 +109,8 @@ async def addUser(token: str, username:str, password:str):
 async def addRole(token:str, operation: str, route: str):
     data = security.validateToken(token)
     
-    #Implement role protections here
+    if not security.validateRole(data['sub'], 'put', 'system/addRole'):
+        raise unauthorized
 
     operations = ["get", "put", "post", "delete"]
 
@@ -99,12 +135,44 @@ async def addRole(token:str, operation: str, route: str):
 
     with open('scripts/system/addRole.sql') as f:
         query = f.read()
+        f.close()
 
     with conn.cursor() as cur:
         cur.execute(query, params)
         res = cur.fetchall()
+        cur.close()
 
     conn.commit()
+
+    conn.close()
+
+    return res
+
+@router.get('/getRoles')
+async def getRoles(token:str, username:str):
+    data = security.validateToken(token)
+
+    if not security.validateRole(data['sub'], 'get', 'system/getRoles'):
+        raise unauthorized
+    
+    # Applications can only access their own roles except admin
+    if data['sub'] != 'admin' and username != data['sub']:
+        raise unauthorized
+    
+    with open('scripts/system/getRoles.sql') as f:
+        query = f.read()
+        f.close()
+
+    conn = getConn('system')
+
+    params = {
+        "username": username
+    }
+
+    with conn.cursor() as cur:
+        cur.execute(query, params)
+        res = cur.fetchall()
+        cur.close()
 
     conn.close()
 
@@ -116,9 +184,12 @@ async def getUser(token:str, username:str):
     data = security.validateToken(token)
     
     #Implement role protections here
+    if not security.validateRole(data['sub'], 'get', 'system/getUser'):
+        raise unauthorized
 
     with open('scripts/system/getUser.sql') as f:
         query = f.read()
+        f.close()
 
     params = {
         "username": username
@@ -129,10 +200,91 @@ async def getUser(token:str, username:str):
     with conn.cursor() as cur:
         cur.execute(query, params)
         res = cur.fetchone()
+        cur.close()
 
     conn.close()
 
     return res
+
+@router.get('/getUsers')
+async def getUsers(token:str):
+    data = security.validateToken(token)
+
+    if not security.validateRole(data['sub'], 'get', 'system/getUsers'):
+        raise unauthorized
+
+    with open('scripts/system/getUsers.sql') as f:
+        query = f.read()
+        f.close()
+    
+    conn = getConn('system')
+
+    with conn.cursor() as cur:
+        cur.execute(query)
+        res = cur.fetchall()
+        cur.close()
+
+    conn.close()
+
+    return res
+
+@router.put('/bindRole')
+async def bindRole(token:str, username:str, route:str, operation:str):
+    data = security.validateToken(token)
+
+    if not security.validateRole(data['sub'], 'put', 'system/bindRole'):
+        raise unauthorized
+
+    params = {
+        "username": username,
+        "route": route,
+        "operation": operation
+    }
+
+    with open('scripts/system/bindRole.sql') as f:
+        query = f.read()
+        f.close()
+
+    conn = getConn('system')
+
+    with conn.cursor() as cur:
+        cur.execute(query, params)
+        res = cur.fetchone()
+        cur.close()
+
+    conn.commit()
+    conn.close()
+
+    return res
+
+@router.delete('/unbindRole')
+async def unbindRole(token:str, username:str, route:str, operation:str):
+    data = security.validateToken(token)
+
+    if not security.validateRole(data['sub'], 'delete', 'system/unbindRole'):
+        raise unauthorized
+    
+    if username == 'admin':
+        raise admin_infringement
+    
+    with open('scripts/system/unbindRole.sql') as f:
+        query = f.read()
+        f.close()
+
+    conn = getConn('system')
+
+    params = {
+        "username": username,
+        "route": route,
+        "operation": operation
+    }
+
+    with conn.cursor() as cur:
+        cur.execute(query, params)
+        res = cur.fetchall()
+        cur.close()
+
+    return {"remaining roles": res}
 
 """Token generating endpoint"""
 @router.get('/getToken')
@@ -143,12 +295,14 @@ async def getToken(username:str, password:str):
 
     with open('scripts/system/getUser.sql') as f:
         query = f.read()
+        f.close()
 
     conn = getConn('system')
 
     with conn.cursor() as cur:
         cur.execute(query, params)
         res = cur.fetchone()
+        cur.close()
 
     conn.close()
 
@@ -165,8 +319,6 @@ async def getToken(username:str, password:str):
             detail="Incorrect Credentials"
         )
     
-    #Get users roles and insert
-    
-    token = security.generateToken(username, 30, [])
+    token = security.generateToken(username, 30)
 
     return token

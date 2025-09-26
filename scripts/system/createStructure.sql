@@ -1,13 +1,16 @@
 CREATE TABLE Users (
     UserID SERIAL PRIMARY KEY,
-    Username Varchar(50) UNIQUE,
-    HashedPassword Varchar(80)
+    Username VARCHAR(50) UNIQUE,
+    HashedPassword VARCHAR(80),
+    ExpireMinutes INT
 );
 
 CREATE TABLE Roles (
     RoleID SERIAL PRIMARY KEY,
-    Operation Varchar(10),
-    Route Varchar(50)
+    Operation VARCHAR(10),
+    Route VARCHAR(50),
+    CONSTRAINT unique_operation_route
+        UNIQUE (Operation, Route)
 );
 
 CREATE TABLE UserRole (
@@ -19,7 +22,9 @@ CREATE TABLE UserRole (
         REFERENCES Users (UserID),
     CONSTRAINT fk_roles_userrole
         FOREIGN KEY (RoleID)
-        REFERENCES Roles (RoleID)
+        REFERENCES Roles (RoleID),
+    CONSTRAINT unique_userid_roleid
+        UNIQUE (UserID, RoleID)
 );
 
 -- -- List all tables in the current schema
