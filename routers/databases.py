@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, status
 from psycopg2 import sql
 import psycopg2
 import os
-from ..dbConn import getConn
+from ..utils.dbConn import getConn
 
 router = APIRouter(
     prefix='/databases'

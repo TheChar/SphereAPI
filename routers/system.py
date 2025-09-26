@@ -1,11 +1,7 @@
-from typing import Literal
 from fastapi import APIRouter, HTTPException, status
-from ..dbConn import getConn
+from ..utils.dbConn import getConn
+from ..utils import security
 import os
-from datetime import datetime as dt
-from datetime import timedelta
-import jwt
-import psycopg2
 from passlib.context import CryptContext
 
 router = APIRouter(
@@ -22,7 +18,7 @@ pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 async def initialize():
     raise HTTPException(
         status_code=status.HTTP_403_FORBIDDEN,
-        detail="Secure method not implemented"
+        detail="This route does not exist"
     )
     conn = getConn('system')
     with open('scripts/system/createStructure.sql') as f:
@@ -45,7 +41,11 @@ Returns:
     json: UserID and Username
 """
 @router.put('/addUser')
-async def addUser(username:str, password:str):
+async def addUser(token: str, username:str, password:str):
+    data = security.validateToken(token)
+
+    #implement role protections here
+    
     conn = getConn('system')
 
     params = {
@@ -71,7 +71,11 @@ async def addUser(username:str, password:str):
 
 """
 @router.put('/addRole')
-async def addRole(operation: str, route: str):
+async def addRole(token:str, operation: str, route: str):
+    data = security.validateToken(token)
+    
+    #Implement role protections here
+
     operations = ["get", "put", "post", "delete"]
 
     if operation.lower() not in operations:
@@ -108,7 +112,11 @@ async def addRole(operation: str, route: str):
 
 """Gets user information from the user with given username"""
 @router.get('/getUser')
-async def getUser(username:str):
+async def getUser(token:str, username:str):
+    data = security.validateToken(token)
+    
+    #Implement role protections here
+
     with open('scripts/system/getUser.sql') as f:
         query = f.read()
 
@@ -120,13 +128,13 @@ async def getUser(username:str):
 
     with conn.cursor() as cur:
         cur.execute(query, params)
-        res = cur.fetchall()
+        res = cur.fetchone()
 
     conn.close()
 
     return res
 
-
+"""Token generating endpoint"""
 @router.get('/getToken')
 async def getToken(username:str, password:str):
     params = {
@@ -159,14 +167,6 @@ async def getToken(username:str, password:str):
     
     #Get users roles and insert
     
-    data = {
-        "iss": "SphereAPI",
-        "sub": username,
-        "exp": dt.now() + timedelta(minutes=30),
-        "iat": dt.now(),
-        "roles": []
-    }
-    
-    token = jwt.encode(data, os.getenv('SECRET'), os.getenv('ALGORITHM'))
+    token = security.generateToken(username, 30, [])
 
     return token
