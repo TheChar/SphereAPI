@@ -46,7 +46,7 @@ def validateToken(token:str):
         )
     
 def validateRole(username:str, operation:str, route:str):
-    with open('scripts/system/getRoles.sql') as f:
+    with open('scripts/system/role/getByUsername.sql') as f:
         query = f.read()
 
     params = {

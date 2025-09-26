@@ -21,6 +21,22 @@ admin_infringement = HTTPException(
     detail="You cannot remove priveleges from admin"
 )
 
+bad_credentials = HTTPException(
+    status_code=status.HTTP_401_UNAUTHORIZED,
+    detail="Incorrect Credentials"
+)
+
+roles = [
+    ['put', 'system/user/add', "Adds a user to the system"],
+    ['put', 'system/role/add', "Adds a role to the system if the corresponding SQL file exists"],
+    ['delete', 'system/role/delete', "Deletes a role from the system"],
+    ['get', 'system/role/get', "Gets the roles associated with a given username"],
+    ['get', 'system/user/get', "Gets user information associated with a username"],
+    ['get', 'system/user/getAll', "Gets all information about all users"],
+    ['put', 'system/role/bind', "Binds a role to a user with a given username, operation, and route"],
+    ['delete', 'system/role/unbind', "Unbinds role from user"],
+]
+
 
 """Initializes the system databases. Needs security foundation support
 
@@ -41,7 +57,7 @@ async def initialize():
         res1 = cur.fetchall()
         cur.close()
 
-    with open('scripts/system/addUser.sql') as f:
+    with open('scripts/system/user/add.sql') as f:
         query = f.read()
         f.close()
 
@@ -58,6 +74,21 @@ async def initialize():
 
     #Add role bindings for admin ==============================================================================================
 
+    with open('scripts/system/role/bind.sql') as f:
+        query = f.read()
+        f.close()
+
+    for role in roles:
+        params = {
+            "username": "admin",
+            "operation": role[0],
+            "route": role[1]
+        }
+
+        with conn.cursor() as cur:
+            cur.execute(query, params)
+            cur.close()
+
     conn.commit()
 
     conn.close()
@@ -70,12 +101,12 @@ async def initialize():
 Returns:
     json: UserID and Username
 """
-@router.put('/addUser')
+@router.put('/user/add')
 async def addUser(token: str, username:str, password:str):
     data = security.validateToken(token)
 
     #implement role protections here
-    if not security.validateRole(data['sub'], 'put', 'system/addUser'):
+    if not security.validateRole(data['sub'], 'put', 'system/user/add'):
         raise unauthorized
     
     conn = getConn('system')
@@ -86,7 +117,7 @@ async def addUser(token: str, username:str, password:str):
         "expmins": 30
     }
 
-    with open('scripts/system/addUser.sql') as f:
+    with open('scripts/system/user/add.sql') as f:
         query = f.read()
         f.close()
 
@@ -105,11 +136,11 @@ async def addUser(token: str, username:str, password:str):
 """Adds a role to the system
 
 """
-@router.put('/addRole')
+@router.put('/role/add')
 async def addRole(token:str, operation: str, route: str):
     data = security.validateToken(token)
     
-    if not security.validateRole(data['sub'], 'put', 'system/addRole'):
+    if not security.validateRole(data['sub'], 'put', 'system/role/add'):
         raise unauthorized
 
     operations = ["get", "put", "post", "delete"]
@@ -123,7 +154,7 @@ async def addRole(token:str, operation: str, route: str):
     if not os.path.isdir(f'scripts/{route}'):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f'{route.capitalize} does not exist'
+            detail=f'{route} does not exist'
         )
     
     conn = getConn('system')
@@ -133,7 +164,7 @@ async def addRole(token:str, operation: str, route: str):
         "route": route
     }
 
-    with open('scripts/system/addRole.sql') as f:
+    with open('scripts/system/role/add.sql') as f:
         query = f.read()
         f.close()
 
@@ -148,18 +179,46 @@ async def addRole(token:str, operation: str, route: str):
 
     return res
 
-@router.get('/getRoles')
+@router.delete('/role/delete')
+async def deleteRole(token:str, operation:str, route:str):
+    data = security.validateToken(token)
+
+    if not security.validateRole(data['sub'], 'delete', 'system/role/delete'):
+        raise unauthorized
+    
+    with open('scripts/system/role/delete.sql') as f:
+        query = f.read()
+        f.close()
+
+    params = {
+        "operation": operation,
+        "route": route
+    }
+
+    conn = getConn('system')
+
+    with conn.cursor() as cur:
+        cur.execute(query, params)
+        res = cur.fetchall()
+        cur.close()
+
+    conn.commit()
+    conn.close()
+
+    return res
+
+@router.get('/role/get')
 async def getRoles(token:str, username:str):
     data = security.validateToken(token)
 
-    if not security.validateRole(data['sub'], 'get', 'system/getRoles'):
+    if not security.validateRole(data['sub'], 'get', 'system/role/get'):
         raise unauthorized
     
     # Applications can only access their own roles except admin
     if data['sub'] != 'admin' and username != data['sub']:
         raise unauthorized
     
-    with open('scripts/system/getRoles.sql') as f:
+    with open('scripts/system/role/getByUsername.sql') as f:
         query = f.read()
         f.close()
 
@@ -179,15 +238,15 @@ async def getRoles(token:str, username:str):
     return res
 
 """Gets user information from the user with given username"""
-@router.get('/getUser')
+@router.get('/user/get')
 async def getUser(token:str, username:str):
     data = security.validateToken(token)
     
     #Implement role protections here
-    if not security.validateRole(data['sub'], 'get', 'system/getUser'):
+    if not security.validateRole(data['sub'], 'get', 'system/user/get'):
         raise unauthorized
 
-    with open('scripts/system/getUser.sql') as f:
+    with open('scripts/system/user/getByUsername.sql') as f:
         query = f.read()
         f.close()
 
@@ -206,14 +265,14 @@ async def getUser(token:str, username:str):
 
     return res
 
-@router.get('/getUsers')
+@router.get('/user/getAll')
 async def getUsers(token:str):
     data = security.validateToken(token)
 
-    if not security.validateRole(data['sub'], 'get', 'system/getUsers'):
+    if not security.validateRole(data['sub'], 'get', 'system/user/getAll'):
         raise unauthorized
 
-    with open('scripts/system/getUsers.sql') as f:
+    with open('scripts/system/user/getAll.sql') as f:
         query = f.read()
         f.close()
     
@@ -228,11 +287,11 @@ async def getUsers(token:str):
 
     return res
 
-@router.put('/bindRole')
-async def bindRole(token:str, username:str, route:str, operation:str):
+@router.put('/role/bind')
+async def bindRole(token:str, username:str, operation:str, route:str):
     data = security.validateToken(token)
 
-    if not security.validateRole(data['sub'], 'put', 'system/bindRole'):
+    if not security.validateRole(data['sub'], 'put', 'system/role/bind'):
         raise unauthorized
 
     params = {
@@ -241,7 +300,7 @@ async def bindRole(token:str, username:str, route:str, operation:str):
         "operation": operation
     }
 
-    with open('scripts/system/bindRole.sql') as f:
+    with open('scripts/system/role/bind.sql') as f:
         query = f.read()
         f.close()
 
@@ -257,17 +316,17 @@ async def bindRole(token:str, username:str, route:str, operation:str):
 
     return res
 
-@router.delete('/unbindRole')
+@router.delete('/role/unbind')
 async def unbindRole(token:str, username:str, route:str, operation:str):
     data = security.validateToken(token)
 
-    if not security.validateRole(data['sub'], 'delete', 'system/unbindRole'):
+    if not security.validateRole(data['sub'], 'delete', 'system/role/unbind'):
         raise unauthorized
     
     if username == 'admin':
         raise admin_infringement
     
-    with open('scripts/system/unbindRole.sql') as f:
+    with open('scripts/system/role/unbind.sql') as f:
         query = f.read()
         f.close()
 
@@ -283,17 +342,27 @@ async def unbindRole(token:str, username:str, route:str, operation:str):
         cur.execute(query, params)
         res = cur.fetchall()
         cur.close()
+    
+    conn.commit()
+    conn.close()
 
     return {"remaining roles": res}
 
+@router.get('/help')
+async def help():
+    res = ""
+    for role in roles:
+        res += f"Route: {role[1]} => {role[2]}\n"
+    return res
+
 """Token generating endpoint"""
-@router.get('/getToken')
+@router.get('/token/get')
 async def getToken(username:str, password:str):
     params = {
         "username": username,
     }
 
-    with open('scripts/system/getUser.sql') as f:
+    with open('scripts/system/user/getByUsername.sql') as f:
         query = f.read()
         f.close()
 
@@ -306,18 +375,13 @@ async def getToken(username:str, password:str):
 
     conn.close()
 
-    #Add use case for username that doesn't exist here
+    #Bad username
     if res == None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect Credentials"
-        )
+        raise bad_credentials
     
+    #Bad password
     if not pwd_context.verify(password, res[2]):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect Credentials"
-        )
+        raise bad_credentials
     
     token = security.generateToken(username, 30)
 

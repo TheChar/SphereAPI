@@ -88,24 +88,3 @@ async def listDatabases():
         res = cur.fetchall()
     
     return res
-
-
-# @router.put('/initialize')
-# async def initDatabase(name:str):
-#     if not name.isalpha():
-#         raise HTTPException(
-#             status_code=status.HTTP_406_NOT_ACCEPTABLE,
-#             detail="New databases must only contain characters a-z lowercase"
-#         )
-    
-#     path = f'../scripts/{name}'
-    
-#     if os.path.isdir(path):
-#         raise HTTPException(
-#             status_code=status.HTTP_409_CONFLICT,
-#             detail=f"This database already exists. Remove with /databases/remove/{name}"
-#         )
-
-#     os.mkdir(path)
-
-#     with open(f"{path}/createStructure.sql", 'x') as f:
