@@ -9,4 +9,4 @@ COPY . .
 
 EXPOSE 8000
 
-CMD ["fastapi", "run", "main.py"]
+CMD ["uvicorn", "app/main:app"]

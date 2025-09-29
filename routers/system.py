@@ -10,22 +10,6 @@ router = APIRouter(
 
 pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
-#Exceptions
-unauthorized = HTTPException(
-    status_code=status.HTTP_401_UNAUTHORIZED,
-    detail="You do not have permission to access this function"
-)
-
-admin_infringement = HTTPException(
-    status_code=status.HTTP_403_FORBIDDEN,
-    detail="You cannot remove priveleges from admin"
-)
-
-bad_credentials = HTTPException(
-    status_code=status.HTTP_401_UNAUTHORIZED,
-    detail="Incorrect Credentials"
-)
-
 roles = [
     ['put', 'system/user/add', "Adds a user to the system"],
     ['put', 'system/role/add', "Adds a role to the system if the corresponding SQL file exists"],
@@ -107,7 +91,7 @@ async def addUser(token: str, username:str, password:str):
 
     #implement role protections here
     if not security.validateRole(data['sub'], 'put', 'system/user/add'):
-        raise unauthorized
+        raise security.unauthorized
     
     conn = getConn('system')
 
@@ -141,7 +125,7 @@ async def addRole(token:str, operation: str, route: str):
     data = security.validateToken(token)
     
     if not security.validateRole(data['sub'], 'put', 'system/role/add'):
-        raise unauthorized
+        raise security.unauthorized
 
     operations = ["get", "put", "post", "delete"]
 
@@ -184,7 +168,7 @@ async def deleteRole(token:str, operation:str, route:str):
     data = security.validateToken(token)
 
     if not security.validateRole(data['sub'], 'delete', 'system/role/delete'):
-        raise unauthorized
+        raise security.unauthorized
     
     with open('scripts/system/role/delete.sql') as f:
         query = f.read()
@@ -212,11 +196,11 @@ async def getRoles(token:str, username:str):
     data = security.validateToken(token)
 
     if not security.validateRole(data['sub'], 'get', 'system/role/get'):
-        raise unauthorized
+        raise security.unauthorized
     
     # Applications can only access their own roles except admin
     if data['sub'] != 'admin' and username != data['sub']:
-        raise unauthorized
+        raise security.unauthorized
     
     with open('scripts/system/role/getByUsername.sql') as f:
         query = f.read()
@@ -244,7 +228,7 @@ async def getUser(token:str, username:str):
     
     #Implement role protections here
     if not security.validateRole(data['sub'], 'get', 'system/user/get'):
-        raise unauthorized
+        raise security.unauthorized
 
     with open('scripts/system/user/getByUsername.sql') as f:
         query = f.read()
@@ -270,7 +254,7 @@ async def getUsers(token:str):
     data = security.validateToken(token)
 
     if not security.validateRole(data['sub'], 'get', 'system/user/getAll'):
-        raise unauthorized
+        raise security.unauthorized
 
     with open('scripts/system/user/getAll.sql') as f:
         query = f.read()
@@ -292,7 +276,7 @@ async def bindRole(token:str, username:str, operation:str, route:str):
     data = security.validateToken(token)
 
     if not security.validateRole(data['sub'], 'put', 'system/role/bind'):
-        raise unauthorized
+        raise security.unauthorized
 
     params = {
         "username": username,
@@ -321,10 +305,10 @@ async def unbindRole(token:str, username:str, route:str, operation:str):
     data = security.validateToken(token)
 
     if not security.validateRole(data['sub'], 'delete', 'system/role/unbind'):
-        raise unauthorized
+        raise security.unauthorized
     
     if username == 'admin':
-        raise admin_infringement
+        raise security.admin_infringement
     
     with open('scripts/system/role/unbind.sql') as f:
         query = f.read()
@@ -377,11 +361,11 @@ async def getToken(username:str, password:str):
 
     #Bad username
     if res == None:
-        raise bad_credentials
+        raise security.bad_credentials
     
     #Bad password
     if not pwd_context.verify(password, res[2]):
-        raise bad_credentials
+        raise security.bad_credentials
     
     token = security.generateToken(username, 30)
 

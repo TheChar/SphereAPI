@@ -5,6 +5,7 @@ from .routers import databases, system, projectmanager
 app = FastAPI()
 app.include_router(databases.router)
 app.include_router(system.router)
+app.include_router(projectmanager.router)
 
 # Online check
 @app.get('/')
