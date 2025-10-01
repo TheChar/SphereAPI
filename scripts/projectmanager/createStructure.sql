@@ -14,10 +14,60 @@ CREATE TABLE Projects (
         REFERENCES DevelopmentStages (DevelopmentStageID)
 );
 
+CREATE TABLE Organizations (
+    OrganizationID SERIAL PRIMARY KEY,
+    Title VARCHAR(100),
+    Location VARCHAR(100)
+);
+
+CREATE TABLE Contributors (
+    ContributorID SERIAL PRIMARY KEY,
+    Name VARCHAR(50),
+    Location VARCHAR(50),
+    CONSTRAINT ck_Name_alpha
+        CHECK (Name NOT LIKE '%[^A-Z]%')
+);
+
+CREATE TABLE ContributorOrganization (
+    ContributorOrganizationID SERIAL PRIMARY KEY,
+    ContributorID INT,
+    OrganizationID INT,
+    CONSTRAINT fk_contributor_contributororganzation
+        FOREIGN KEY (ContributorID)
+        REFERENCES Contributors (ContributorID),
+    CONSTRAINT fk_organization_contributororganization
+        FOREIGN KEY (OrganizationID)
+        REFERENCES Organizations (OrganizationID)
+);
+
+CREATE TABLE ProjectContributor (
+    ProjectContributorID SERIAL PRIMARY KEY,
+    ProjectID INT,
+    ContributorID INT,
+    IsOwner BOOLEAN,
+    IsRemoved BOOLEAN,
+    CONSTRAINT fk_projects_projectcontributor
+        FOREIGN KEY (ProjectID)
+        REFERENCES Projects (ProjectID),
+    CONSTRAINT fk_contributors_projectcontributor
+        FOREIGN KEY (ContributorID)
+        REFERENCES Contributors (ContributorID),
+    CONSTRAINT unique_projectid_contributorid
+        UNIQUE (ProjectID, ContributorID)
+);
+
 CREATE TABLE Tags (
     TagID SERIAL PRIMARY KEY,
-    Title VARCHAR(20) UNIQUE,
+    Title VARCHAR(20),
     Implements JSON,
+    Owner: Int
+    CONSTRAINT ck_title_alphanumeric
+        CHECK (Title NOT LIKE '%[^A-Z0-9]%'),
+    CONSTRAINT fk_owner_contributor
+        FOREIGN KEY (Owner)
+        REFERENCES Contributors (ContributorID),
+    CONSTRAINT unique_title_owner
+        UNIQUE (Title, Owner)
 );
 
 CREATE TABLE ProjectTag (
@@ -50,26 +100,6 @@ CREATE TABLE ProjectWebComponent (
     CONSTRAINT fk_webcomponents_projectwebcomponent
         FOREIGN KEY (WebComponentID)
         REFERENCES WebComponents (WebComponentID)
-);
-
-CREATE TABLE Contributors (
-    ContributorID SERIAL PRIMARY KEY,
-    Name VARCHAR(50),
-    Organization VARCHAR(50),
-    Location VARCHAR(50)
-);
-
-CREATE TABLE ProjectContributor (
-    ProjectContributorID SERIAL PRIMARY KEY,
-    ProjectID INT,
-    ContributorID INT,
-    IsOwner BOOLEAN,
-    CONSTRAINT fk_projects_projectcontributor
-        FOREIGN KEY (ProjectID)
-        REFERENCES Projects (ProjectID),
-    CONSTRAINT fk_contributors_projectcontributor
-        FOREIGN KEY (ContributorID)
-        REFERENCES Contributors (ContributorID)
 );
 
 CREATE TABLE TimeEntries (

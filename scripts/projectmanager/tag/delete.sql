@@ -1,0 +1,2 @@
+DELETE FROM Tags
+WHERE TagID = %(TagID)s;

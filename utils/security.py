@@ -23,12 +23,18 @@ bad_credentials = HTTPException(
     detail="Incorrect Credentials"
 )
 
-def generateToken(username:str, minutes:int):
+something_wrong = HTTPException(
+    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+    detail="Something went wrong"
+)
+
+def generateToken(username:str, minutes:int, appdata):
     data = {
         "iss": "SphereAPI",
         "sub": username,
         "exp": dt.now(timezone.utc) + timedelta(minutes=minutes),
         "iat": dt.now(timezone.utc),
+        "appdata": appdata
     }
 
     secret = os.getenv('SECRET')
