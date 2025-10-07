@@ -28,13 +28,14 @@ something_wrong = HTTPException(
     detail="Something went wrong"
 )
 
-def generateToken(username:str, minutes:int, appdata):
+def generateToken(username:str, minutes:int, appdata, apptitle:str, role:str):
     data = {
-        "iss": "SphereAPI",
+        "iss": apptitle,
         "sub": username,
         "exp": dt.now(timezone.utc) + timedelta(minutes=minutes),
         "iat": dt.now(timezone.utc),
-        "appdata": appdata
+        "appdata": appdata,
+        "role": role
     }
 
     secret = os.getenv('SECRET')
@@ -67,12 +68,13 @@ def validateToken(token:str):
             detail="Something went wrong"
         )
     
-def validateRole(username:str, operation:str, route:str):
-    with open('scripts/system/role/getByUsername.sql') as f:
+def validateRole(appTitle:str, roleTitle:str, operation:str, route:str):
+    with open('scripts/system/role/route/list.sql') as f:
         query = f.read()
 
     params = {
-        "username":username
+        "RoleTitle": roleTitle,
+        "AppTitle": appTitle
     }
 
     conn = getConn('system')
