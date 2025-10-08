@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from .routers.system import main as system
+from .routers.projectmanager import main as projectmanager
 from .utils.dbConn import getConn
 from .utils import security
 from psycopg2 import sql
@@ -7,6 +8,7 @@ from psycopg2 import sql
 # App construction and routers
 app = FastAPI()
 app.include_router(system.router)
+#app.include_router(projectmanager.router)
 
 # Online check
 @app.get('/')

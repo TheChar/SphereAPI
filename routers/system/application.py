@@ -109,7 +109,7 @@ async def deleteApplication(token:str, title:str):
         conn = getConn(db)
         with conn.cursor() as cur:
             cur.execute(query, params)
-            res = cur.fetchone()
+            res = "Operation Successful"
             cur.close()
         conn.commit()
         conn.close()

@@ -203,7 +203,7 @@ async def registerOnApp(token:str, appTitle:str, roleTitle:str, appData:str, use
     
 """Removes a user from an app"""
 @router.delete('/register/leaveApp')
-async def registerOnApp(token:str, appTitle:str, username:str):
+async def leaveApp(token:str, appTitle:str, username:str):
     data = security.validateToken(token)
     if not security.validateRole(data['iss'], data['role'], 'delete', 'system/user/register/leaveApp'):
         raise security.unauthorized
@@ -232,7 +232,7 @@ async def registerOnApp(token:str, appTitle:str, username:str):
     
 """Sets a role for the user within the given app"""
 @router.put('/register/role')
-async def registerOnApp(token:str, appTitle:str, roleTitle:str, username:str):
+async def registerRole(token:str, appTitle:str, roleTitle:str, username:str):
     data = security.validateToken(token)
     if not security.validateRole(data['iss'], data['role'], 'put', 'system/user/register/role'):
         raise security.unauthorized
@@ -299,7 +299,7 @@ async def listAppUsers(token:str, appTitle:str):
     
 """Lists all users with the given role in an app"""
 @router.get('/list/role')
-async def listAllUsers(token:str, appTitle:str, roleTitle:str):
+async def listRoleUsers(token:str, appTitle:str, roleTitle:str):
     data = security.validateToken(token)
     if not security.validateRole(data['iss'], data['role'], 'get', 'system/user/list/role'):
         raise security.unauthorized
