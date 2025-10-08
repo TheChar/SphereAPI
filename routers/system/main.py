@@ -99,7 +99,7 @@ async def initialize():
         ('post', 'system/user/changeExpiration'),
         ('delete', 'system/user/delete'),
         ('put', 'system/user/register/app'),
-        ('delete', 'system/user/register/leaveApp')
+        ('delete', 'system/user/register/leaveApp'),
         ('put', 'system/user/register/role'),
         ('get', 'system/user/list/app'),
         ('get', 'system/user/list/role'),
