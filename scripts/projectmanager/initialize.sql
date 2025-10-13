@@ -1,6 +1,6 @@
 CREATE TABLE Organizations (
     OrganizationID SERIAL PRIMARY KEY,
-    Title VARCHAR(100)
+    Title VARCHAR(100) UNIQUE
 );
 
 CREATE TABLE Contributors (

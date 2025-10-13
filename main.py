@@ -8,7 +8,7 @@ from psycopg2 import sql
 # App construction and routers
 app = FastAPI()
 app.include_router(system.router)
-#app.include_router(projectmanager.router)
+app.include_router(projectmanager.router)
 
 # Online check
 @app.get('/')

@@ -4,6 +4,7 @@ from ...utils import security
 
 router = APIRouter(prefix='/projectmanager')
 db = 'projectmanager'
+app = "Project Manager"
 
 @router.get('/')
 async def onlineCheck():
@@ -59,6 +60,38 @@ async def initialize():
     #Add routes for the roles
     default_routes = [
         #All routes need to go here as ('operation', 'route')
+        ('put', 'projectmanager/contributor/register'),
+        ('delete', 'projectmanager/contributor/leave'),
+        ('put', 'projectmanager/contributor/organization/join'),
+        ('delete', 'projectmanager/contributor/organization/leave'),
+        ('get', 'projectmanager/contributor/organization/list'),
+        ('put', 'projectmanager/organization/create'),
+        ('delete', 'projectmanager/organization/dissolve'),
+        ('post', 'projectmanager/organization/transfer'),
+        ('put', 'projectmanager/project/create'),
+        ('post', 'projectmanager/project/update'),
+        ('delete', 'projectmanager/project/delete'),
+        ('get', 'projectmanager/project/get'),
+        ('post', 'projectmanager/project/transfer'),
+        ('get', 'projectmanager/project/list/bycontributor'),
+        ('get', 'projectmanager/project/list/byowner'),
+        ('get', 'projectmanager/project/list/bytag'),
+        ('put', 'projectmanager/project/contributor/add'),
+        ('delete', 'projectmanager/project/contributor/remove'),
+        ('post', 'projectmanager/project/contributor/restore'),
+        ('put', 'projectmanager/project/tag/bind'),
+        ('put', 'projectmanager/timeentry/create'),
+        ('post', 'projectmanager/timeentry/update'),
+        ('delete', 'projectmanager/timeentry/delete'),
+        ('get', 'projectmanager/timeentry/list/byproject'),
+        ('get', 'projectmanager/timeentry/list/bycontributor'),
+        ('put', 'projectmanager/tag/create'),
+        ('post', 'projectmanager/tag/update'),
+        ('post', 'projectmanager/tag/transfer'),
+        ('get', 'projectmanager/tag/list/byowner'),
+        ('get', 'projectmanager/tag/list/byproject'),
+        ('get', 'projectmanager/tag/get'),
+        ('get', 'projectmanager/tag/project/get')
     ]
 
     with open('scripts/system/role/route/bind.sql') as f:
