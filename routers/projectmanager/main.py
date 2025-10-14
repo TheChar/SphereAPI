@@ -1,21 +1,31 @@
 from fastapi import APIRouter
 from ...utils.dbConn import getConn
 from ...utils import security
+from .contributor import router as contributor
+from .organization import router as organization
+from .project import router as project
+from .tag import router as tag
+from .timeentry import router as timeentry
 
 router = APIRouter(prefix='/projectmanager')
 db = 'projectmanager'
 app = "Project Manager"
+
+router.include_router(contributor)
+router.include_router(organization)
+router.include_router(project)
+router.include_router(tag)
+router.include_router(timeentry)
 
 @router.get('/')
 async def onlineCheck():
     return "Project Manager API is online"
 
 @router.put('/initialize')
-async def initialize():
-    # raise HTTPException(
-    #     status_code=status.HTTP_403_FORBIDDEN,
-    #     detail="This route does not exist"
-    # )
+async def initialize(token:str):
+    data = security.validateToken(token)
+    if not security.validateRole('System', data['role'], 'put', 'projectmanager/initialize'):
+        raise security.unauthorized
     conn = getConn(db)
     with open('scripts/projectmanager/initialize.sql') as f:
         query = f.read()
@@ -110,8 +120,51 @@ async def initialize():
             cur.execute(query4, params4)
             cur.close()
 
-    conn.commit()
+    #Register contributor join routes to system roles
+    with open('scripts/system/role/route/bind.sql') as f:
+        query5 = f.read()
+        f.close()
 
+    roles = [
+        'Admin',
+        'Default'
+    ]
+
+    for role in roles:
+        params5 = {
+            "RoleTitle": role,
+            "AppTitle": "Project Manager",
+            "Operation": 'put',
+            "RouteName": 'projectmanager/contributor/register'
+        }
+
+        with conn.cursor() as cur:
+            cur.execute(query5, params5)
+            cur.close()
+
+    conn.commit()
     conn.close()
 
     return {"detail": "Operation Successful"}
+
+"""For debugging"""
+@router.delete('/destruct')
+async def destructPM(token:str):
+    data = security.validateToken(token)
+    if not security.validateRole('System', data['role'], 'delete', 'projectmanager/destruct'):
+        raise security.unauthorized
+    with open('scripts/projectmanager/destruct.sql') as f:
+        query = f.read()
+        f.close()
+    try:
+        conn = getConn(db)
+        with conn.cursor() as cur:
+            cur.execute(query)
+            res = cur.fetchone()
+            cur.close()
+        conn.commit()
+        conn.close()
+        return res
+    except Exception as e:
+        print(e)
+        raise security.something_wrong

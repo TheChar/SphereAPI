@@ -8,7 +8,7 @@ from ...utils import security
 
 db = 'projectmanager'
 app = "Project Manager"
-router = APIRouter(prefix='timeentry')
+router = APIRouter(prefix='/timeentry')
 
 """Creates a new time entry"""
 @router.put('/create')
