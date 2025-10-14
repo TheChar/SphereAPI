@@ -30,5 +30,27 @@ WHERE ProjectID = %(ProjectID)s AND ContributorID = %(NewOwnerID)s;
 UPDATE ProjectContributor
 SET IsOwner = FALSE
 WHERE ProejctID = %(ProjectID)s AND ContributorID = %(ContributorID)s;
-RETURN 'Success'
+
+INSERT INTO TimeEntries(StartTime, ProjectContributorID, Description, Version)
+VALUES (
+    NOW(),
+    (SELECT ProjectContributorID
+        FROM ProjectContributor
+        WHERE ProjectID = %(ProjectID)s AND ContributorID = %(ContributorID)s;    
+    ),
+    'Stepped down from ownership',
+    (SELECT Version FROM Projects WHERE ProjectID = %(ProjectID)s)
+);
+
+INSERT INTO TimeEntries(StartTime, ProjectContributorID, Description, Version)
+VALUES (
+    NOW(),
+    (SELECT ProjectContributorID
+        FROM ProjectContributor
+        WHERE ProjectID = %(ProjectID)s AND ContributorID = %(NewOwnerID)s;
+    ),
+    'Assumed ownership',
+    (SELECT Version FROM Projects WHERE ProejctID = %(ProjectID)s)
+);
+RETURN 'Success';
 END $$;
