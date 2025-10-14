@@ -1,5 +1,5 @@
 """
-Routes: /projectmanager/project/* => create, update, delete, get, transfer, list/all, list/byowner, list/bytag, contributor/add, contributor/remove, contributor/restore, tag/bind, tag/unbind
+Routes: /projectmanager/project/* => create, update, delete, get, transfer, list/all, list/byowner, list/bytag, contributor/add, contributor/remove, contributor/restore, tag/bind, tag/unbind, tag/get
 """
 
 from fastapi import APIRouter
@@ -346,6 +346,32 @@ async def unbindTag(token:str, projectID:str, tagID:str):
             res = cur.fetchone()
             cur.close()
         conn.commit()
+        conn.close()
+        return res
+    except Exception as e:
+        print(e)
+        raise security.something_wrong
+    
+"""Gets tag implementation used by a specific project"""
+@router.get('/tag/get')
+async def getTagImplementation(token:str, projectID:str, tagID:str):
+    data = security.validateToken(token)
+    if not security.validateRole(app, data['role'], 'get', 'projectmanager/project/tag/get'):
+        raise security.unauthorized
+    with open('scripts/projectmanager/project/tag/get.sql') as f:
+        query = f.read()
+        f.close()
+    params = {
+        "ContributorID": data['appdata']['contributorID'],
+        "ProjectID": projectID,
+        "TagID": tagID
+    }
+    try:
+        conn = getConn(db)
+        with conn.cursor() as cur:
+            cur.execute(query, params)
+            res = cur.fetchone()
+            cur.close()
         conn.close()
         return res
     except Exception as e:

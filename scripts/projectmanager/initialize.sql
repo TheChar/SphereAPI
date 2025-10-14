@@ -61,6 +61,7 @@ CREATE TABLE TimeEntries (
 CREATE TABLE Tags (
     TagID SERIAL PRIMARY KEY,
     Implements JSON,
+    IsPublic BOOLEAN,
     Owner INT,
     CONSTRAINT fk_tags_contributors
         FOREIGN KEY (Owner)
