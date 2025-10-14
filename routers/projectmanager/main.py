@@ -73,7 +73,7 @@ async def initialize():
         ('delete', 'projectmanager/project/delete'),
         ('get', 'projectmanager/project/get'),
         ('post', 'projectmanager/project/transfer'),
-        ('get', 'projectmanager/project/list/bycontributor'),
+        ('get', 'projectmanager/project/list/all'),
         ('get', 'projectmanager/project/list/byowner'),
         ('get', 'projectmanager/project/list/bytag'),
         ('put', 'projectmanager/project/contributor/add'),
