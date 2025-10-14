@@ -3,7 +3,12 @@ SELECT
     U.Username,
     U.HashedPassword,
     U.ExpireMinutes,
-    jsonb_agg(UA.Data) AS AppData,
+    (
+        SELECT jsonb_agg(UA.Data)
+        FROM UserApplication UA
+        JOIN Applications A ON UA.ApplicationID = A.ApplicationID
+        WHERE UA.UserID = U.UserID AND A.Title = %(AppTitle)s
+    ) AS AppData,
     R.Title,
     jsonb_agg(
         jsonb_build_object('Operation', RT.Operation, 'Route', RT.RouteName)

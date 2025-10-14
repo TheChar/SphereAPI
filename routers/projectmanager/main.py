@@ -35,6 +35,7 @@ async def initialize(token:str):
         cur.execute(query)
         cur.close()
 
+    conn.commit()
     conn.close()
     conn = getConn('system')
 
@@ -133,7 +134,7 @@ async def initialize(token:str):
     for role in roles:
         params5 = {
             "RoleTitle": role,
-            "AppTitle": "Project Manager",
+            "AppTitle": "System",
             "Operation": 'put',
             "RouteName": 'projectmanager/contributor/register'
         }
@@ -156,14 +157,26 @@ async def destructPM(token:str):
     with open('scripts/projectmanager/destruct.sql') as f:
         query = f.read()
         f.close()
+    with open('scripts/system/application/delete.sql') as f:
+        query2 = f.read()
+        f.close()
+    params = {
+        "Title": app
+    }
     try:
         conn = getConn(db)
         with conn.cursor() as cur:
             cur.execute(query)
-            res = cur.fetchone()
             cur.close()
         conn.commit()
         conn.close()
+        conn = getConn('system')
+        with conn.cursor() as cur:
+            cur.execute(query2, params)
+            cur.close()
+        conn.commit()
+        conn.close()
+        res = "Success"
         return res
     except Exception as e:
         print(e)

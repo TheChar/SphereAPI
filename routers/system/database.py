@@ -67,7 +67,8 @@ async def deleteDatabase(token:str, name:str):
         conn.close()
 
         return {"message": "Operation Complete"}
-    except:
+    except Exception as e:
+        print(e)
         raise security.something_wrong
 
 

@@ -5,6 +5,7 @@ from fastapi import APIRouter
 from ...utils.dbConn import getConn
 from ...utils import security
 from datetime import datetime as dt
+import json
 
 db = 'projectmanager'
 app = "Project Manager"
@@ -15,7 +16,7 @@ router = APIRouter(prefix='/contributor')
 @router.put('/register')
 async def registerUser(token:str):
     data = security.validateToken(token)
-    if not security.validateRole(app, data['role'], 'put', 'projectmanager/contributor/register'):
+    if not security.validateRole('System', data['role'], 'put', 'projectmanager/contributor/register'):
         raise security.unauthorized
     with open('scripts/projectmanager/contributor/add.sql') as f:
         query1 = f.read()
@@ -32,7 +33,7 @@ async def registerUser(token:str):
         "AppTitle": app,
         "RoleTitle": "Default",
         "JoinDate": dt.now(),
-        "Data": {"contributorID": "-1"}
+        "Data": json.dumps({"contributorID": "-1"})
     }
     try:
         sysconn = getConn('system')
@@ -47,7 +48,8 @@ async def registerUser(token:str):
             cur.execute(query1, params)
             contID = cur.fetchone()
             cur.close()
-        params["Data"]["contributorID"] = contID
+        params["Data"] = json.dumps({"contributorID": contID[0]})
+        print(params)
         with sysconn.cursor() as cur:
             cur.execute(query2, params)
             cur.close()

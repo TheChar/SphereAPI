@@ -217,7 +217,7 @@ async def getToken(username:str, password:str, appTitle:str):
         if not pwd_context.verify(password, res[2]):
             raise security.bad_credentials
         
-        token = security.generateToken(res[1], res[3], res[4], appTitle, res[5])
+        token = security.generateToken(res[1], res[3], res[4][0], appTitle, res[5])
 
         return token
     except Exception as e:
