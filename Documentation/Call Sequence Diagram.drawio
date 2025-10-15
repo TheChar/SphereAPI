@@ -1,0 +1,199 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.2.5 Chrome/138.0.7204.251 Electron/37.6.1 Safari/537.36" version="28.2.5">
+  <diagram name="Page-1" id="TvVtk2tpGsBgTtQOddMI">
+    <mxGraphModel dx="3364" dy="2424" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="2Zo_ddsYwR0-GzYB_dKL-1" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-30" y="-40" width="1480" height="980" as="geometry" />
+        </mxCell>
+        <mxCell id="N3F-zToKsxhzx-nrHr97-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="N3F-zToKsxhzx-nrHr97-1" target="N3F-zToKsxhzx-nrHr97-2" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="150" y="110" />
+              <mxPoint x="150" y="110" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3F-zToKsxhzx-nrHr97-1" value="User" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;" parent="1" vertex="1">
+          <mxGeometry x="20" y="80" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="N3F-zToKsxhzx-nrHr97-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;curved=0;" parent="1" source="N3F-zToKsxhzx-nrHr97-2" target="N3F-zToKsxhzx-nrHr97-7" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="440" y="130" />
+              <mxPoint x="440" y="130" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3F-zToKsxhzx-nrHr97-28" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;curved=0;" parent="1" source="N3F-zToKsxhzx-nrHr97-2" target="N3F-zToKsxhzx-nrHr97-7" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="540" y="590" />
+              <mxPoint x="540" y="590" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3F-zToKsxhzx-nrHr97-2" value="&lt;font style=&quot;font-size: 24px;&quot;&gt;ProjectManager Client&lt;/font&gt;" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};size=60;" parent="1" vertex="1">
+          <mxGeometry x="180" width="220" height="930" as="geometry" />
+        </mxCell>
+        <mxCell id="N3F-zToKsxhzx-nrHr97-22" value="" style="html=1;points=[[0,0,0,0,5],[0,1,0,0,-5],[1,0,0,0,5],[1,1,0,0,-5]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};" parent="N3F-zToKsxhzx-nrHr97-2" vertex="1">
+          <mxGeometry x="100" y="430" width="20" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="N3F-zToKsxhzx-nrHr97-23" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;Store token&lt;/font&gt;" style="html=1;align=left;spacingLeft=2;endArrow=block;rounded=0;edgeStyle=orthogonalEdgeStyle;curved=0;rounded=0;" parent="N3F-zToKsxhzx-nrHr97-2" target="N3F-zToKsxhzx-nrHr97-22" edge="1">
+          <mxGeometry x="0.0117" relative="1" as="geometry">
+            <mxPoint x="115" y="410" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="145" y="440" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3F-zToKsxhzx-nrHr97-26" value="" style="html=1;points=[[0,0,0,0,5],[0,1,0,0,-5],[1,0,0,0,5],[1,1,0,0,-5]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};" parent="N3F-zToKsxhzx-nrHr97-2" vertex="1">
+          <mxGeometry x="100" y="520" width="20" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="N3F-zToKsxhzx-nrHr97-27" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;Display Loading Screen&lt;/font&gt;" style="html=1;align=left;spacingLeft=2;endArrow=block;rounded=0;edgeStyle=orthogonalEdgeStyle;curved=0;rounded=0;" parent="N3F-zToKsxhzx-nrHr97-2" target="N3F-zToKsxhzx-nrHr97-26" edge="1">
+          <mxGeometry x="0.0117" relative="1" as="geometry">
+            <mxPoint x="115" y="500" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="145" y="530" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3F-zToKsxhzx-nrHr97-37" value="" style="html=1;points=[[0,0,0,0,5],[0,1,0,0,-5],[1,0,0,0,5],[1,1,0,0,-5]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};" parent="N3F-zToKsxhzx-nrHr97-2" vertex="1">
+          <mxGeometry x="100" y="830" width="20" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="N3F-zToKsxhzx-nrHr97-38" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;Display Projects list on screen&lt;/font&gt;" style="html=1;align=left;spacingLeft=2;endArrow=block;rounded=0;edgeStyle=orthogonalEdgeStyle;curved=0;rounded=0;" parent="N3F-zToKsxhzx-nrHr97-2" target="N3F-zToKsxhzx-nrHr97-37" edge="1">
+          <mxGeometry x="0.4118" relative="1" as="geometry">
+            <mxPoint x="115" y="810" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="145" y="840" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3F-zToKsxhzx-nrHr97-6" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;Enter Username, Password&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry x="50" y="75" width="240" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="N3F-zToKsxhzx-nrHr97-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;curved=0;" parent="1" source="N3F-zToKsxhzx-nrHr97-7" target="N3F-zToKsxhzx-nrHr97-10" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1000" y="150" />
+              <mxPoint x="1000" y="150" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3F-zToKsxhzx-nrHr97-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;curved=0;" parent="1" source="N3F-zToKsxhzx-nrHr97-7" target="N3F-zToKsxhzx-nrHr97-2" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="540" y="390" />
+              <mxPoint x="540" y="390" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3F-zToKsxhzx-nrHr97-30" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;curved=0;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="809.3235294117644" y="690.001176470588" as="sourcePoint" />
+            <mxPoint x="1299.5" y="690.001176470588" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1000" y="690.06" />
+              <mxPoint x="1000" y="690.06" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3F-zToKsxhzx-nrHr97-35" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;curved=0;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="810.09" y="790.001176470588" as="sourcePoint" />
+            <mxPoint x="269.9135294117646" y="790.001176470588" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="540.59" y="790.06" />
+              <mxPoint x="540.59" y="790.06" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3F-zToKsxhzx-nrHr97-7" value="&lt;font style=&quot;font-size: 24px;&quot;&gt;API&lt;/font&gt;" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};" parent="1" vertex="1">
+          <mxGeometry x="760" y="10" width="100" height="910" as="geometry" />
+        </mxCell>
+        <mxCell id="N3F-zToKsxhzx-nrHr97-15" value="" style="html=1;points=[[0,0,0,0,5],[0,1,0,0,-5],[1,0,0,0,5],[1,1,0,0,-5]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};" parent="N3F-zToKsxhzx-nrHr97-7" vertex="1">
+          <mxGeometry x="45" y="240" width="10" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="N3F-zToKsxhzx-nrHr97-16" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;password validation&lt;/font&gt;" style="html=1;align=left;spacingLeft=2;endArrow=block;rounded=0;edgeStyle=orthogonalEdgeStyle;curved=0;rounded=0;" parent="N3F-zToKsxhzx-nrHr97-7" target="N3F-zToKsxhzx-nrHr97-15" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="50" y="220" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="80" y="250" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3F-zToKsxhzx-nrHr97-18" value="" style="html=1;points=[[0,0,0,0,5],[0,1,0,0,-5],[1,0,0,0,5],[1,1,0,0,-5]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};" parent="N3F-zToKsxhzx-nrHr97-7" vertex="1">
+          <mxGeometry x="45" y="320" width="10" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="N3F-zToKsxhzx-nrHr97-19" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;&amp;nbsp;Encode JSON Web Token&lt;/font&gt;" style="html=1;align=left;spacingLeft=2;endArrow=block;rounded=0;edgeStyle=orthogonalEdgeStyle;curved=0;rounded=0;" parent="N3F-zToKsxhzx-nrHr97-7" target="N3F-zToKsxhzx-nrHr97-18" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="50" y="300" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="80" y="330" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3F-zToKsxhzx-nrHr97-39" value="" style="html=1;points=[[0,0,0,0,5],[0,1,0,0,-5],[1,0,0,0,5],[1,1,0,0,-5]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};" parent="N3F-zToKsxhzx-nrHr97-7" vertex="1">
+          <mxGeometry x="45" y="620.06" width="10" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="N3F-zToKsxhzx-nrHr97-40" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;Validate JSON Web Token&lt;/font&gt;" style="html=1;align=left;spacingLeft=2;endArrow=block;rounded=0;edgeStyle=orthogonalEdgeStyle;curved=0;rounded=0;" parent="N3F-zToKsxhzx-nrHr97-7" target="N3F-zToKsxhzx-nrHr97-39" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="50" y="600.06" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="80" y="630.06" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3F-zToKsxhzx-nrHr97-9" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;system/get/token?username={}&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;&amp;amp;password={}&amp;amp;appTitle=Project%20Manager&lt;/font&gt;&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry x="350" y="65" width="380" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="N3F-zToKsxhzx-nrHr97-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;curved=0;" parent="1" source="N3F-zToKsxhzx-nrHr97-10" target="N3F-zToKsxhzx-nrHr97-7" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="990" y="200" />
+              <mxPoint x="990" y="200" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3F-zToKsxhzx-nrHr97-33" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;curved=0;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1295.09" y="750.061176470588" as="sourcePoint" />
+            <mxPoint x="804.9135294117644" y="750.061176470588" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1035.59" y="750.1199999999999" />
+              <mxPoint x="1035.59" y="750.1199999999999" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3F-zToKsxhzx-nrHr97-10" value="&lt;font style=&quot;font-size: 24px;&quot;&gt;Database&lt;/font&gt;" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};" parent="1" vertex="1">
+          <mxGeometry x="1250" y="10" width="130" height="910" as="geometry" />
+        </mxCell>
+        <mxCell id="N3F-zToKsxhzx-nrHr97-12" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;SELECT User Information for Project Manager&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry x="840" y="110" width="390" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="N3F-zToKsxhzx-nrHr97-14" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;Username, Password, ProjectManagerID, etc.&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry x="840" y="165" width="390" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="N3F-zToKsxhzx-nrHr97-21" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;Response: JSON Web Token&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry x="405" y="340" width="260" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="N3F-zToKsxhzx-nrHr97-29" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;projectmanager/project/list/all?token={}&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry x="395" y="550" width="330" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="N3F-zToKsxhzx-nrHr97-31" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;SELECT Project Information FROM Projects&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry x="860" y="655" width="380" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="N3F-zToKsxhzx-nrHr97-34" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;Title, Contributors, Description, Version, etc.&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry x="865" y="715" width="370" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="N3F-zToKsxhzx-nrHr97-36" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;Response: Array of Project Objects&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry x="400" y="750" width="300" height="40" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
