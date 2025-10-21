@@ -74,7 +74,7 @@ async def changePassword(token:str, oldpass:str, newpass:str):
             raise security.unauthorized
         with conn.cursor() as cur:
             cur.execute(query2, params)
-            res = {"detail": "Operation Successful"}
+            res = 'Success'
             cur.close()
         conn.commit()
         conn.close()
@@ -103,7 +103,7 @@ async def changeName(token:str, name:str):
         conn = getConn(db)
         with conn.cursor() as cur:
             cur.execute(query, params)
-            res = {"detail": "Operation Successful"}
+            res = 'Success'
             cur.close()
         conn.commit()
         conn.close()
@@ -132,7 +132,7 @@ async def changeExpiration(token:str, username:str, minutes:str):
         conn = getConn(db)
         with conn.cursor() as cur:
             cur.execute(query, params)
-            res = {"detail": "Operation Successful"}
+            res = 'Success'
             cur.close()
         conn.commit()
         conn.close()
@@ -160,7 +160,7 @@ async def deleteUser(token:str, username:str):
         conn = getConn(db)
         with conn.cursor() as cur:
             cur.execute(query, params)
-            res = {"detail": "Operation Successful"}
+            res = 'Success'
             cur.close()
         conn.commit()
         conn.close()
@@ -192,7 +192,7 @@ async def registerOnApp(token:str, appTitle:str, roleTitle:str, appData:str, use
         conn = getConn(db)
         with conn.cursor() as cur:
             cur.execute(query, params)
-            res = {"detail": "Operation Successful"}
+            res = 'Success'
             cur.close()
         conn.commit()
         conn.close()
@@ -221,7 +221,7 @@ async def leaveApp(token:str, appTitle:str, username:str):
         conn = getConn(db)
         with conn.cursor() as cur:
             cur.execute(query, params)
-            res = {"detail": "Operation Successful"}
+            res = 'Success'
             cur.close()
         conn.commit()
         conn.close()

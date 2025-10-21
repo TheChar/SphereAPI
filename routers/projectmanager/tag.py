@@ -166,3 +166,29 @@ async def getTag(token:str, tagID:str):
     except Exception as e:
         print(e)
         raise security.something_wrong
+    
+"""Deletes a tag"""
+@router.delete('/delete')
+async def deleteTag(token:str, tagID:str):
+    data = security.validateToken(token)
+    if not security.validateRole(app, data['role'], 'delete', 'projectmanager/tag/delete'):
+        raise security.unauthorized
+    with open('scripts/projectmanager/tag/delete.sql') as f:
+        query = f.read()
+        f.close()
+    params = {
+        "ContributorID": data['appdata']['contributorID'],
+        "TagID": tagID
+    }
+    try:
+        conn = getConn(db)
+        with conn.cursor() as cur:
+            cur.execute(query, params)
+            res = cur.fetchone()
+            cur.close()
+        conn.commit()
+        conn.close()
+        return res
+    except Exception as e:
+        print(e)
+        raise security.something_wrong

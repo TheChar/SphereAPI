@@ -143,7 +143,7 @@ async def deleteRole(token:str, roleTitle:str, appTitle:str):
         conn = getConn(db)
         with conn.cursor() as cur:
             cur.execute(query, params)
-            res = cur.fetchone()
+            res = 'Successful'
             cur.close()
         conn.commit()
         conn.close()
@@ -202,7 +202,7 @@ async def bindRoute(token:str, roleTitle:str, appTitle:str, operation:str, route
         conn = getConn(db)
         with conn.cursor() as cur:
             cur.execute(query, params)
-            res = {"detail": "Operation Successful"}
+            res = "Success"
             cur.close()
         conn.commit()
         conn.close()
@@ -231,7 +231,7 @@ async def deleteRoute(token:str, operation:str, routeName:str):
         conn = getConn(db)
         with conn.cursor() as cur:
             cur.execute(query, params)
-            res = {"detail": "Operation Successful"}
+            res = "Success"
             cur.close()
         conn.commit()
         conn.close()
@@ -262,7 +262,7 @@ async def unbindRoute(token:str, roleTitle:str, appTitle:str, operation:str, rou
         conn = getConn(db)
         with conn.cursor() as cur:
             cur.execute(query, params)
-            res = {"detail": "Operation Successful"}
+            res = "Success"
             cur.close()
         conn.commit()
         conn.close()

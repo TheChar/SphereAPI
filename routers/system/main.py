@@ -187,7 +187,7 @@ async def initialize():
     return {"detail": "Operation Successful"}
 
 """Token generating endpoint"""
-@router.get('/token/get')
+@router.post('/token')
 async def getToken(username:str, password:str, appTitle:str):
     params = {
         "Username": username,
