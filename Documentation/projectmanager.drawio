@@ -1,6 +1,6 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.2.5 Chrome/138.0.7204.251 Electron/37.6.1 Safari/537.36" version="28.2.5">
   <diagram name="Page-1" id="hgZP0UWr4bXfPoWj0P3o">
-    <mxGraphModel dx="1868" dy="1762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="2547" dy="2402" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -142,15 +142,15 @@
             <mxRectangle width="150" height="30" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="cnFTLaFqMFi_IvdEZvxh-1" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=0;" vertex="1" parent="tdmTgspyNQhXTEdrzw7p-40">
+        <mxCell id="cnFTLaFqMFi_IvdEZvxh-1" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=0;" parent="tdmTgspyNQhXTEdrzw7p-40" vertex="1">
           <mxGeometry y="120" width="180" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="cnFTLaFqMFi_IvdEZvxh-2" value="" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;editable=1;overflow=hidden;" vertex="1" parent="cnFTLaFqMFi_IvdEZvxh-1">
+        <mxCell id="cnFTLaFqMFi_IvdEZvxh-2" value="" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;editable=1;overflow=hidden;" parent="cnFTLaFqMFi_IvdEZvxh-1" vertex="1">
           <mxGeometry width="30" height="30" as="geometry">
             <mxRectangle width="30" height="30" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="cnFTLaFqMFi_IvdEZvxh-3" value="IsPublic: Boolean" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;overflow=hidden;" vertex="1" parent="cnFTLaFqMFi_IvdEZvxh-1">
+        <mxCell id="cnFTLaFqMFi_IvdEZvxh-3" value="IsPublic: Boolean" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;overflow=hidden;" parent="cnFTLaFqMFi_IvdEZvxh-1" vertex="1">
           <mxGeometry x="30" width="150" height="30" as="geometry">
             <mxRectangle width="150" height="30" as="alternateBounds" />
           </mxGeometry>
@@ -468,10 +468,10 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="M1b-3m7-YSsUvh5S0gDX-1" value="Implements:&lt;div&gt;#github-repo =&amp;gt; ask for url&lt;/div&gt;&lt;div&gt;#public =&amp;gt; boolean checkbox&lt;/div&gt;&lt;div&gt;#webdev-suite =&amp;gt; {&quot;component&quot;: &quot;string&quot;, &quot;params&quot;: &quot;dict&quot;}[]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="-540" y="100" width="200" height="150" as="geometry" />
+          <mxGeometry x="-500" y="140" width="200" height="150" as="geometry" />
         </mxCell>
         <mxCell id="M1b-3m7-YSsUvh5S0gDX-18" value="Implementations:&lt;div&gt;{&lt;/div&gt;&lt;div&gt;&quot;github-repo&quot;: &quot;http://...&quot;,&lt;/div&gt;&lt;div&gt;&quot;public&quot;: true,&lt;/div&gt;&lt;div&gt;&quot;webdev-suite&quot;: [&lt;/div&gt;&lt;div&gt;{&quot;component&quot;: &quot;Video&quot;, &quot;params&quot;: {}}&lt;/div&gt;&lt;div&gt;]&lt;/div&gt;&lt;div&gt;}&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="-60" y="450" width="240" height="170" as="geometry" />
+          <mxGeometry x="-60" y="340" width="240" height="170" as="geometry" />
         </mxCell>
         <mxCell id="M1b-3m7-YSsUvh5S0gDX-22" value="Orgs can own projects in future" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="540" y="560" width="120" height="60" as="geometry" />
