@@ -31,6 +31,5 @@ WHERE ProjectID = %(ProjectID)s;
 --Delete Project
 DELETE FROM Projects
 WHERE ProjectID = %(ProjectID)s;
-RETURN 'Success';
 
 END $$;

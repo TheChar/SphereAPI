@@ -5,6 +5,7 @@ Routes: /projectmanager/project/* => create, update, delete, get, transfer, list
 from fastapi import APIRouter
 from ...utils.dbConn import getConn
 from ...utils import security
+from psycopg2.extras import DictCursor
 
 app = "Project Manager"
 db = 'projectmanager'
@@ -29,11 +30,10 @@ async def createProject(token:str, title:str, description:str, version:str):
         conn = getConn(db)
         with conn.cursor() as cur:
             cur.execute(query, params)
-            res = cur.fetchone()
             cur.close()
         conn.commit()
         conn.close()
-        return res
+        return "Success"
     except Exception as e:
         print(e)
         raise security.something_wrong
@@ -58,11 +58,10 @@ async def updateProject(token:str, projectID:str, title:str, description:str, ve
         conn = getConn(db)
         with conn.cursor() as cur:
             cur.execute(query, params)
-            res = cur.fetchone()
             cur.close()
         conn.commit()
         conn.close()
-        return res
+        return "Success"
     except Exception as e:
         print(e)
         raise security.something_wrong
@@ -84,11 +83,10 @@ async def deleteProject(token:str, projectID:str):
         conn = getConn(db)
         with conn.cursor() as cur:
             cur.execute(query, params)
-            res = cur.fetchone()
             cur.close()
         conn.commit()
         conn.close()
-        return res
+        return "Success"
     except Exception as e:
         print(e)
         raise security.something_wrong
@@ -108,9 +106,14 @@ async def getProjectInfo(token:str, projectID:str):
     }
     try:
         conn = getConn(db)
-        with conn.cursor() as cur:
-            cur.execute(query, params)
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute("SELECT is_contributor(%(ContributorID)s, %(ProjectID)s)", params)
             res = cur.fetchone()
+            if not res[0]:
+                raise Exception('User is not a contributor')
+            cur.execute(query, params)
+            res = cur.fetchall()
+            res = [dict(r) for r in res]
             cur.close()
         conn.close()
         return res
@@ -130,16 +133,16 @@ async def transferOwnership(token:str, projectID:str, newOwnerID:str):
     params = {
         "ContributorID": data['appdata']['contributorID'],
         "ProjectID": projectID,
+        "NewOwnerID": newOwnerID
     }
     try:
         conn = getConn(db)
         with conn.cursor() as cur:
             cur.execute(query, params)
-            res = cur.fetchone()
             cur.close()
         conn.commit()
         conn.close()
-        return res
+        return "Success"
     except Exception as e:
         print(e)
         raise security.something_wrong
@@ -158,11 +161,12 @@ async def listProjects(token:str):
     }
     try:
         conn = getConn(db)
-        with conn.cursor() as cur:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
             cur.execute(query, params)
             res = cur.fetchall()
             cur.close()
         conn.close()
+        res = [dict(r) for r in res]
         return res
     except Exception as e:
         print(e)
@@ -182,9 +186,10 @@ async def listOwnedProjects(token:str):
     }
     try:
         conn = getConn(db)
-        with conn.cursor() as cur:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
             cur.execute(query, params)
             res = cur.fetchall()
+            res = [dict(r) for r in res]
             cur.close()
         conn.close()
         return res
@@ -207,9 +212,10 @@ async def listByTag(token:str, tagTitle:str):
     }
     try:
         conn = getConn(db)
-        with conn.cursor() as cur:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
             cur.execute(query, params)
             res = cur.fetchall()
+            res = [dict(r) for r in res]
             cur.close()
         conn.close()
         return res
@@ -234,17 +240,20 @@ async def addContributor(token:str, projectID:str, newContributorID:str):
     try:
         conn = getConn(db)
         with conn.cursor() as cur:
-            cur.execute(query, params)
+            cur.execute("SELECT is_contributor(%(ContributorID)s, %(ProjectID)s)", params)
             res = cur.fetchone()
+            if not res[0]:
+                raise Exception('Cannot add to a project not contributing to')
+            cur.execute(query, params)
             cur.close()
         conn.commit()
         conn.close()
-        return res
+        return "Success"
     except Exception as e:
         print(e)
         raise security.something_wrong
     
-"""Removes a contributor from a project with bit flippling"""
+"""Removes a contributor from a project (field altering, not record dropping)"""
 @router.post('/contributor/remove')
 async def removeContributor(token:str, projectID:str, removedContributorID:str):
     data = security.validateToken(token)
@@ -261,12 +270,17 @@ async def removeContributor(token:str, projectID:str, removedContributorID:str):
     try:
         conn = getConn(db)
         with conn.cursor() as cur:
-            cur.execute(query, params)
+            cur.execute("SELECT is_owner(%(ContributorID)s, %(ProjectID)s)", params)
             res = cur.fetchone()
+            if res[0] and projectID == removedContributorID:
+                raise Exception("Owner cannot remove self. Transfer project or delete.")
+            elif not res[0] and projectID != removedContributorID:
+                raise Exception("Non-owner cannot remove other contributors from project.")
+            cur.execute(query, params)
             cur.close()
         conn.commit()
         conn.close()
-        return res
+        return "Success"
     except Exception as e:
         print(e)
         raise security.something_wrong
@@ -288,12 +302,15 @@ async def restoreContributor(token:str, projectID:str, restoredContID:str):
     try:
         conn = getConn(db)
         with conn.cursor() as cur:
-            cur.execute(query, params)
+            cur.execute("SELECT is_owner(%(ContributorID)s, %(ProjectID)s)", params)
             res = cur.fetchone()
+            if not res[0]:
+                raise Exception("Only an owner can restore a previously removed contributor")
+            cur.execute(query, params)
             cur.close()
         conn.commit()
         conn.close()
-        return res
+        return "Success"
     except Exception as e:
         print(e)
         raise security.something_wrong
@@ -315,12 +332,16 @@ async def bindTag(token:str, projectID:str, tagID:str):
     try:
         conn = getConn(db)
         with conn.cursor() as cur:
-            cur.execute(query, params)
+            cur.execute("SELECT is_contributor(%(ContributorID)s, %(ProjectID)s)", params)
             res = cur.fetchone()
+            if not res[0]:
+                raise Exception("Cannot add tag to a project user is not contributor of")
+            #TODO: Needs to check if the implementations are the types and formats expected by the tag
+            cur.execute(query, params)
             cur.close()
         conn.commit()
         conn.close()
-        return res
+        return "Success"
     except Exception as e:
         print(e)
         raise security.something_wrong
@@ -342,12 +363,15 @@ async def unbindTag(token:str, projectID:str, tagID:str):
     try:
         conn = getConn(db)
         with conn.cursor() as cur:
-            cur.execute(query, params)
+            cur.execute("SELECT is_contributor(%(ContributorID)s, %(ProjectID)s)", params)
             res = cur.fetchone()
+            if not res[0]:
+                raise Exception('User cannot edit a project they do not contribute to')
+            cur.execute(query, params)
             cur.close()
         conn.commit()
         conn.close()
-        return res
+        return "Success"
     except Exception as e:
         print(e)
         raise security.something_wrong
@@ -368,9 +392,14 @@ async def getTagImplementation(token:str, projectID:str, tagID:str):
     }
     try:
         conn = getConn(db)
-        with conn.cursor() as cur:
-            cur.execute(query, params)
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute("SELECT is_contributor(%(ContributorID)s, %(ProjectID)s)", params)
             res = cur.fetchone()
+            if not res['is_contributor']:
+                raise Exception("Cannot access data for a project not contributing to")
+            cur.execute(query, params)
+            res = cur.fetchall()
+            res = [dict(r) for r in res]
             cur.close()
         conn.close()
         return res

@@ -1,3 +1,2 @@
 INSERT INTO Tags (Title, Implements, IsPublic, Owner)
-VALUES (%(Title)s, %(Implements)s, %(IsPublic)s, %(ContributorID)s)
-RETURN 'Success';
+VALUES (%(Title)s, %(Implements)s, %(IsPublic)s, %(ContributorID)s);

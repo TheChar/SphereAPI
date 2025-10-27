@@ -23,5 +23,4 @@ WHERE OrganizationID = org_id;
 --Delete organization
 DELETE FROM Organizations
 WHERE OrganizationID = org_id;
-RETURN "Success";
 END $$;

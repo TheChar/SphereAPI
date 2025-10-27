@@ -25,17 +25,17 @@ def callAPI(method, path):
 
 def getToken(type):
     if type == 'admin':
-        res = callAPI('get', '/token/get?username=testsoftware&password=password&appTitle=System')
+        res = callAPI('post', '/token?username=testsoftware&password=password&appTitle=System')
     elif type == 'default':
-        res = callAPI('get', '/token/get?username=testsoftwaredefault&password=password&appTitle=System')
+        res = callAPI('post', '/token?username=testsoftwaredefault&password=password&appTitle=System')
     else: 
-        res = callAPI('get', '/token/get')
+        res = callAPI('post', '/token')
     token = res.json()
     return token
 
 """Creates testing accounts"""
 def test_init():
-    res = callAPI('get', '/token/get?username=admin&password=password&appTitle=System')
+    res = callAPI('post', '/token?username=admin&password=password&appTitle=System')
     token = res.json()
     callAPI('put', f'/user/add?token={token}&username=testsoftware&password=password&name=Admin Test Software')
     callAPI('put', f'/user/register/role?token={token}&appTitle=System&roleTitle=Admin&username=testsoftware')
@@ -356,7 +356,7 @@ def test_addUser():
 
 """Get new user token"""
 def test_newUserToken():
-    res = callAPI('get', f'/token/get?username=testnew&password=somepassword&appTitle=System')
+    res = callAPI('post', f'/token?username=testnew&password=somepassword&appTitle=System')
     parsed = res.json()
     data = jwt.decode(parsed, os.getenv('SECRET'), algorithms=os.getenv('ALGORITHM'))
     assert data['sub'] == 'testnew'
@@ -364,27 +364,27 @@ def test_newUserToken():
 
 """Change new user password"""
 def test_newUserChangePassword():
-    res = callAPI('get', f'/token/get?username=testnew&password=somepassword&appTitle=System')
+    res = callAPI('post', f'/token?username=testnew&password=somepassword&appTitle=System')
     token = res.json()
     res = callAPI('post', f'/user/changePassword?token={token}&oldpass=somepassword&newpass=someotherpassword')
     parsed = res.json()
     assert res.ok
     assert parsed == 'Success'
 
-    res = callAPI('get', f'/token/get?username=testnew&password=someotherpassword&appTitle=System')
+    res = callAPI('post', f'/token?username=testnew&password=someotherpassword&appTitle=System')
     parsed = res.json()
     data = jwt.decode(parsed, os.getenv('SECRET'), algorithms=os.getenv('ALGORITHM'))
     assert data['sub'] == 'testnew'
     assert data['iss'] == 'System'
 
-    res = callAPI('get', f'/token/get?username=testnew&password=somepassword&appTitle=System')
+    res = callAPI('post', f'/token?username=testnew&password=somepassword&appTitle=System')
     parsed = res.json()
     assert not res.ok
     assert res.status_code == 500
 
 """Changes User Name"""
 def test_changeName():
-    res = callAPI('get', f'/token/get?username=testnew&password=someotherpassword&appTitle=System')
+    res = callAPI('post', f'/token?username=testnew&password=someotherpassword&appTitle=System')
     token = res.json()
     res = callAPI('post', f'/user/changeName?token={token}&name=New%20Name')
     parsed = res.json()
@@ -561,7 +561,7 @@ def test_applicationDelete():
 
 """Remove Testing accounts"""
 def test_removeTestingAccounts():
-    res = callAPI('get', '/token/get?username=admin&password=password&appTitle=System')
+    res = callAPI('post', '/token?username=admin&password=password&appTitle=System')
     token = res.json()
     callAPI('delete', f'/user/delete?token={token}&username=testsoftware')
     callAPI('delete', f'/user/delete?token={token}&username=testsoftwaredefault')

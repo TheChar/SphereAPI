@@ -5,6 +5,7 @@ Routes: /projectmanager/timeentry/* => create, update, delete, list/byproject, l
 from fastapi import APIRouter
 from ...utils.dbConn import getConn
 from ...utils import security
+from psycopg2.extras import DictCursor
 
 db = 'projectmanager'
 app = "Project Manager"
@@ -28,12 +29,15 @@ async def createTimeEntry(token:str, projectID:str, description:str, version:str
     try:
         conn = getConn(db)
         with conn.cursor() as cur:
-            cur.execute(query, params)
+            cur.execute("is_contributor(%(ContributorID)s, %(ProjectID)s)", params)
             res = cur.fetchone()
+            if not res[0]:
+                raise Exception('User cannot create time entries for projects they do not contribute to')
+            cur.execute(query, params)
             cur.close()
         conn.commit()
         conn.close()
-        return res
+        return "Success"
     except Exception as e:
         print(e)
         raise security.something_wrong
@@ -58,12 +62,15 @@ async def updateTimeEntry(token:str, timeEntryID:str, startTime:str, endTime:str
     try:
         conn = getConn(db)
         with conn.cursor() as cur:
-            cur.execute(query, params)
+            cur.execute("SELECT is_timeentry_owner(%(ContributorID)s, %(TimeEntryID)s)", params)
             res = cur.fetchone()
+            if not res[0]:
+                raise Exception("User cannot update an entry that does not belong to them")
+            cur.execute(query, params)
             cur.close()
         conn.commit()
         conn.close()
-        return res
+        return "Success"
     except Exception as e:
         print(e)
         raise security.something_wrong
@@ -84,12 +91,15 @@ async def deleteEntry(token:str, timeEntryID:str):
     try:
         conn = getConn(db)
         with conn.cursor() as cur:
-            cur.execute(query, params)
+            cur.execute("SELECT is_timeentry_owner(%(ContributorID)s, %(TimeEntryID)s)", params)
             res = cur.fetchone()
+            if not res[0]:
+                raise Exception("User cannot delete time entry that does not belong to them")
+            cur.execute(query, params)
             cur.close()
         conn.commit()
         conn.close()
-        return res
+        return "Success"
     except Exception as e:
         print(e)
         raise security.something_wrong
@@ -109,9 +119,14 @@ async def listByProject(token:str, projectID:str):
     }
     try:
         conn = getConn(db)
-        with conn.cursor() as cur:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute("is_contributor(%(ContributorID)s, %(ProjectID)s)", params)
+            res = cur.fetchone()
+            if not res['is_contributor']:
+                raise Exception("User cannot get time entries for a project they do not contribute to")
             cur.execute(query, params)
             res = cur.fetchall()
+            res = [dict(r) for r in res]
             cur.close()
         conn.close()
         return res
@@ -133,9 +148,10 @@ async def listByContributor(token:str):
     }
     try:
         conn = getConn(db)
-        with conn.cursor() as cur:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
             cur.execute(query, params)
             res = cur.fetchall()
+            res = [dict(r) for r in res]
             cur.close()
         conn.close()
         return res

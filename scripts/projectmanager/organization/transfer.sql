@@ -36,5 +36,4 @@ WHERE ContributorID = %(NewOwnerContID)s AND OrganizationID = org_id;
 UPDATE ContributorOrganization
 SET IsOwner = FALSE
 WHERE ContributorID = %(ContributorID)s AND OrganizationID = org_id;
-RETURN 'Success';
 END $$;

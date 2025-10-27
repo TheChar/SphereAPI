@@ -5,6 +5,7 @@ Routes: projectmanager/tag/* => create, update, list/byowner, list/byproject, li
 from fastapi import APIRouter
 from ...utils.dbConn import getConn
 from ...utils import security
+from psycopg2.extras import DictCursor
 
 app = "Project Manager"
 db = 'projectmanager'
@@ -29,11 +30,10 @@ async def createTag(token:str, title:str, implements:str, isPublic:str):
         conn = getConn(db)
         with conn.cursor() as cur:
             cur.execute(query, params)
-            res = cur.fetchone()
             cur.close()
         conn.commit()
         conn.close()
-        return res
+        return "Success"
     except Exception as e:
         print(e)
         raise security.something_wrong
@@ -57,12 +57,15 @@ async def updateTag(token:str, tagID:str, title:str, implements:str, isPublic:st
     try:
         conn = getConn(db)
         with conn.cursor() as cur:
-            cur.execute(query, params)
+            cur.execute("SELECT is_tag_owner(%(ContributorID)s, %(TagID)s)", params)
             res = cur.fetchone()
+            if not res[0]:
+                raise Exception("User cannot edit properties of a tag they do not own")
+            cur.execute(query, params)
             cur.close()
         conn.commit()
         conn.close()
-        return res
+        return "Success"
     except Exception as e:
         print(e)
         raise security.something_wrong
@@ -82,9 +85,10 @@ async def listByOwner(token:str, ownerID:str):
     }
     try:
         conn = getConn(db)
-        with conn.cursor() as cur:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
             cur.execute(query, params)
             res = cur.fetchall()
+            res = [dict(r) for r in res]
             cur.close()
         conn.close()
         return res
@@ -107,9 +111,14 @@ async def listByProject(token:str, projectID:str):
     }
     try:
         conn = getConn(db)
-        with conn.cursor() as cur:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute("SELECT is_contributor(%(ContributorID)s, %(ProjectID)s)", params)
+            res = cur.fetchone()
+            if not res['is_contributor']:
+                raise Exception("Cannot retrieve information for a project user does not contribute to")
             cur.execute(query, params)
             res = cur.fetchall()
+            res = [dict(r) for r in res]
             cur.close()
         conn.close()
         return res
@@ -132,9 +141,10 @@ async def getAllPublicTags(token:str, page:str):
     }
     try:
         conn = getConn(db)
-        with conn.cursor() as cur:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
             cur.execute(query, params)
             res = cur.fetchall()
+            res = [dict(r) for r in res]
             cur.close()
         conn.close()
         return res
@@ -157,9 +167,16 @@ async def getTag(token:str, tagID:str):
     }
     try:
         conn = getConn(db)
-        with conn.cursor() as cur:
-            cur.execute(query, params)
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute("SELECT is_tag_owner(%(ContributorID)s, %(TagID)s)", params)
             res = cur.fetchone()
+            cur.execute("SELECT is_tag_public(%(TagID)s)", params)
+            res2 = cur.fetchone()
+            if not res['is_tag_owner'] and not res2['is_tag_public']:
+                raise Exception("User cannot access tag data for a private tag they do not own")
+            cur.execute(query, params)
+            res = cur.fetchall()
+            res = [dict(r) for r in res]
             cur.close()
         conn.close()
         return res
@@ -183,12 +200,15 @@ async def deleteTag(token:str, tagID:str):
     try:
         conn = getConn(db)
         with conn.cursor() as cur:
-            cur.execute(query, params)
+            cur.execute("SELECT is_tag_owner(%(ContributorID)s, %(TagID)s)", params)
             res = cur.fetchone()
+            if not res[0]:
+                raise Exception("User cannot delete a tag they do not own")
+            cur.execute(query, params)
             cur.close()
         conn.commit()
         conn.close()
-        return res
+        return "Success"
     except Exception as e:
         print(e)
         raise security.something_wrong

@@ -21,5 +21,4 @@ SET
     Description = COALESCE(%(Description)s, Description),
     Version = COALESCE(%(Version)s, Version),
 WHERE ProjectID = %(ProjectID)s;
-RETURN "Success";
 END $$;

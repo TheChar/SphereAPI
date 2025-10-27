@@ -52,5 +52,4 @@ VALUES (
     'Assumed ownership',
     (SELECT Version FROM Projects WHERE ProejctID = %(ProjectID)s)
 );
-RETURN 'Success';
 END $$;

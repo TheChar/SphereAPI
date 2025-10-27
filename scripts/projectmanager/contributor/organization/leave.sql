@@ -18,4 +18,4 @@ END IF;
 --Leave org
 DELETE FROM ContributorOrganization
 WHERE ContributorID = %(contributorID)s AND OrganizationID = (SELECT OrganizationID FROM Organizations WHERE Title = %(OrgTitle)s);
-RETURNING "Success";
+END $$;

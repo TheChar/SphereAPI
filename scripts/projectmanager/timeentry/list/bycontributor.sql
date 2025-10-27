@@ -1,6 +1,3 @@
-DO $$
-BEGIN
-
 SELECT TE.StartTime,
     TE.EndTime,
     C.Name,
@@ -11,5 +8,3 @@ LEFT JOIN ProjectContributor PC ON PC.ProjectContributorID = TE.ProjectContribut
 LEFT JOIN Contributors C ON PC.ContributorID = C.ContributorID
 WHERE PC.ContributorID = %(ContributorID)s
 ORDER BY StartTime DESC;
-
-END $$;

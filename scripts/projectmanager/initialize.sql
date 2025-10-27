@@ -1,14 +1,14 @@
-CREATE TABLE Organizations (
+CREATE TABLE IF NOT EXISTS Organizations (
     OrganizationID SERIAL PRIMARY KEY,
     Title VARCHAR(100) UNIQUE
 );
 
-CREATE TABLE Contributors (
+CREATE TABLE IF NOT EXISTS Contributors (
     ContributorID SERIAL PRIMARY KEY,
     Name VARCHAR(50)
 );
 
-CREATE TABLE ContributorOrganization (
+CREATE TABLE IF NOT EXISTS ContributorOrganization (
     ContributorOrganizationID SERIAL PRIMARY KEY,
     ContributorID INT,
     OrganizationID INT,
@@ -23,14 +23,14 @@ CREATE TABLE ContributorOrganization (
         UNIQUE (ContributorID, OrganizationID)
 );
 
-CREATE TABLE Projects (
+CREATE TABLE IF NOT EXISTS Projects (
     ProjectID SERIAL PRIMARY KEY,
     Title VARCHAR(100),
     Version VARCHAR(30),
     Description VARCHAR(300)
 );
 
-CREATE TABLE ProjectContributor (
+CREATE TABLE IF NOT EXISTS ProjectContributor (
     ProjectContributorID SERIAL PRIMARY KEY,
     ProjectID INT,
     ContributorID INT,
@@ -46,7 +46,7 @@ CREATE TABLE ProjectContributor (
         UNIQUE (ContributorID, ProjectID)
 );
 
-CREATE TABLE TimeEntries (
+CREATE TABLE IF NOT EXISTS TimeEntries (
     TimeEntryID SERIAL PRIMARY KEY,
     StartTime DATE,
     EndTime DATE,
@@ -58,17 +58,20 @@ CREATE TABLE TimeEntries (
         REFERENCES ProjectContributor (ProjectContributorID)
 );
 
-CREATE TABLE Tags (
+CREATE TABLE IF NOT EXISTS Tags (
     TagID SERIAL PRIMARY KEY,
+    Title VARCHAR(80),
     Implements JSON,
     IsPublic BOOLEAN,
     Owner INT,
     CONSTRAINT fk_tags_contributors
         FOREIGN KEY (Owner)
-        REFERENCES Contributors (ContributorID)
+        REFERENCES Contributors (ContributorID),
+    CONSTRAINT unique_title_owner
+        UNIQUE (Title, Owner)
 );
 
-CREATE TABLE ProjectTag (
+CREATE TABLE IF NOT EXISTS ProjectTag (
     ProjectTagID SERIAL PRIMARY KEY,
     ProjectID INT,
     TagID INT,
@@ -82,3 +85,67 @@ CREATE TABLE ProjectTag (
     CONSTRAINT unique_project_tag
         UNIQUE (ProjectID, TagID)
 );
+
+CREATE OR REPLACE FUNCTION is_contributor(contributor_ID INT, project_ID INT)
+RETURNS BOOLEAN
+AS $$
+BEGIN
+RETURN EXISTS (
+    SELECT 1
+    FROM ProjectContributor
+    WHERE ProjectID = project_ID
+    AND ContributorID = contributor_ID
+    AND IsRemoved = FALSE
+);
+END; 
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION is_owner(contributor_ID INT, project_ID INT)
+RETURNS BOOLEAN
+AS $$
+BEGIN
+RETURN EXISTS (
+    SELECT 1
+    FROM ProjectContributor
+    WHERE ProjectID = project_ID
+    AND ContributorID = contributor_ID
+    AND IsOwner = TRUE
+);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION is_tag_owner(contributor_ID INT, tag_ID INT)
+RETURNS BOOLEAN
+AS $$
+BEGIN
+RETURN contributor_ID == (
+    SELECT Owner
+    FROM Tags
+    WHERE TagID = tag_ID
+);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION is_tag_public(tag_ID INT)
+RETURNS BOOLEAN
+AS $$
+BEGIN
+RETURN (
+    SELECT IsPublic
+    FROM Tags
+    WHERE TagID = tag_ID
+);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION is_timeentry_owner(contributor_ID INT, timeentry_ID INT)
+RETURNS BOOLEAN
+AS $$
+BEGIN
+RETURN contributor_ID == (
+    SELECT PC.ContributorID
+    FROM ProjectContributor PC
+    LEFT JOIN TimeEntries TE ON TE.ProjectContributorID = PC.ProjectContributorID
+);
+END;
+$$ LANGUAGE plpgsql;

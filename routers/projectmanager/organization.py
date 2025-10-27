@@ -28,11 +28,10 @@ async def createOrganization(token:str, orgTitle:str):
         conn = getConn(db)
         with conn.cursor() as cur:
             cur.execute(query, params)
-            res = cur.fetchone()
             cur.close()
         conn.commit()
         conn.close()
-        return res
+        return "Success"
     except Exception as e:
         print(e)
         raise security.something_wrong
@@ -58,7 +57,7 @@ async def dissolveOrganization(token:str, orgTitle:str):
             cur.close()
         conn.commit()
         conn.close()
-        return res
+        return "Success"
     except Exception as e:
         print(e)
         raise security.something_wrong
@@ -81,11 +80,10 @@ async def transferOrg(token:str, newOwnerContID:str, orgTitle:str):
         conn = getConn(db)
         with conn.cursor() as cur:
             cur.execute(query, params)
-            res = cur.fetchone()
             cur.close()
         conn.commit()
         conn.close()
-        return res
+        return "Success"
     except Exception as e:
         print(e)
         raise security.something_wrong
