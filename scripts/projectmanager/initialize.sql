@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS ContributorOrganization (
     ContributorOrganizationID SERIAL PRIMARY KEY,
     ContributorID INT,
     OrganizationID INT,
+    IsJoined BOOLEAN,
     IsOwner BOOLEAN,
     CONSTRAINT fk_contributor_contributororganization
         FOREIGN KEY (ContributorID)
@@ -146,6 +147,32 @@ RETURN contributor_ID == (
     SELECT PC.ContributorID
     FROM ProjectContributor PC
     LEFT JOIN TimeEntries TE ON TE.ProjectContributorID = PC.ProjectContributorID
+);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION is_in_organization(contributor_ID INT, organization_ID INT)
+RETURNS BOOLEAN
+AS $$
+BEGIN
+RETURN EXISTS (
+    SELECT 1
+    FROM ContributorOrganization
+    WHERE ContributorID = contributor_ID
+        AND OrganizationID = organization_ID
+);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION is_organization_owner(contributor_ID INT, organization_ID INT)
+RETURNS BOOLEAN
+AS $$
+BEGIN
+RETURN (
+    SELECT IsOwner
+    FROM ContributorOrganization
+    WHERE ContributorID = contributor_ID
+        AND OrganizationID = organization_ID
 );
 END;
 $$ LANGUAGE plpgsql;

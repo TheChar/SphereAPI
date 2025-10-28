@@ -79,6 +79,7 @@ async def initialize(token:str):
         ('put', 'projectmanager/organization/create'),
         ('delete', 'projectmanager/organization/dissolve'),
         ('post', 'projectmanager/organization/transfer'),
+        ('put', 'projectmanager/organization/invite'),
         ('put', 'projectmanager/project/create'),
         ('post', 'projectmanager/project/update'),
         ('delete', 'projectmanager/project/delete'),

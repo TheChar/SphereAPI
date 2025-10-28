@@ -2,7 +2,8 @@ SELECT
     O.OrganizationID,
     O.Title,
     OwnerCO.ContributorID AS OwnerID,
-    OwnerCont.Name AS OwnerName
+    OwnerCont.Name AS OwnerName,
+    UserCO.IsJoined AS AcceptedInvite
 FROM Organizations O
 JOIN ContributorOrganization UserCO 
     ON UserCO.OrganizationID = O.OrganizationID

@@ -98,9 +98,9 @@ async def deactivatePMAccount(token:str):
         print(e)
         raise security.something_wrong
 
-"""Joins a user to an organization"""
+"""Joins a user to an organization already in by caller"""
 @router.put('/organization/join')
-async def joinOrg(token:str, orgTitle:str):
+async def joinOrg(token:str, orgID:str):
     data = security.validateToken(token)
     if not security.validateRole(app, data['role'], 'put', 'projectmanager/contributor/organization/join'):
         raise security.unauthorized
@@ -109,7 +109,7 @@ async def joinOrg(token:str, orgTitle:str):
         f.close()
     params = {
         "ContributorID": data['appdata']['contributorID'],
-        "OrgTitle": orgTitle
+        "OrganizationID": orgID
     }
     try:
         conn = getConn(db)
