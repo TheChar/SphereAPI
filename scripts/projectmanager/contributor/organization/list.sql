@@ -1,4 +1,11 @@
-SELECT O.Title, O.Owner
+SELECT 
+    O.OrganizationID,
+    O.Title,
+    OwnerCO.ContributorID AS OwnerID
 FROM Organizations O
-LEFT JOIN ContributorOrganization CO ON CO.OrganizationID = O.OrganizationID
-WHERE CO.ContributorID = %(ContributorID)s;
+JOIN ContributorOrganization UserCO 
+    ON UserCO.OrganizationID = O.OrganizationID
+    AND UserCO.ContributorID = %(ContributorID)s
+JOIN ContributorOrganization OwnerCO
+    ON OwnerCO.OrganizationID = O.OrganizationID
+    AND OwnerCO.IsOwner = TRUE;
