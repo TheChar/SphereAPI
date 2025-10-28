@@ -53,7 +53,6 @@ async def dissolveOrganization(token:str, orgTitle:str):
         conn = getConn(db)
         with conn.cursor() as cur:
             cur.execute(query, params)
-            res = cur.fetchone()
             cur.close()
         conn.commit()
         conn.close()

@@ -1,6 +1,7 @@
 DO $$
-DECLARE org_id INT,
-is_owner;
+DECLARE 
+    org_id INT;
+    is_owner BOOLEAN;
 BEGIN
 --Get org_id
 SELECT OrganizationID
@@ -15,7 +16,7 @@ WHERE ContributorID = %(ContributorID)s AND OrganizationID = org_id;
 --Exception handling
 IF NOT is_owner
 THEN
-RAISE EXCEPTION "User cannot dissolve an organization they don't own";
+RAISE EXCEPTION 'User cannot dissolve an organization they dont own';
 END IF;
 --Remove users from org
 DELETE FROM ContributorOrganization

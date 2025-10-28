@@ -6,6 +6,7 @@ from ...utils.dbConn import getConn
 from ...utils import security
 from datetime import datetime as dt
 import json
+from psycopg2.extras import DictCursor
 
 db = 'projectmanager'
 app = "Project Manager"
@@ -161,9 +162,10 @@ async def listOrganizations(token:str):
     }
     try:
         conn = getConn(db)
-        with conn.cursor() as cur:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
             cur.execute(query, params)
             res = cur.fetchall()
+            res = [dict(r) for r in res]
             cur.close()
         conn.close()
         return res
