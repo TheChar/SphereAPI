@@ -89,7 +89,7 @@ async def initialize(token:str):
         ('get', 'projectmanager/project/list/byowner'),
         ('get', 'projectmanager/project/list/bytag'),
         ('put', 'projectmanager/project/contributor/add'),
-        ('delete', 'projectmanager/project/contributor/remove'),
+        ('post', 'projectmanager/project/contributor/remove'),
         ('post', 'projectmanager/project/contributor/restore'),
         ('put', 'projectmanager/project/tag/bind'),
         ('put', 'projectmanager/timeentry/create'),

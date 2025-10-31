@@ -50,13 +50,17 @@ async def updateProject(token:str, projectID:str, title:str, description:str, ve
     params = {
         "ContributorID": data['appdata']['contributorID'],
         "ProjectID": projectID,
-        "Title": title,
-        "Description": description,
-        "Version": version
+        "Title": title if title != '' else None,
+        "Description": description if description != '' else None,
+        "Version": version if version != '' else None
     }
     try:
         conn = getConn(db)
         with conn.cursor() as cur:
+            cur.execute("SELECT is_owner(%(ContributorID)s, %(ProjectID)s)", params)
+            res = cur.fetchone()
+            if not res[0]:
+                raise Exception("User cannot edit metadata on a project they do not own")
             cur.execute(query, params)
             cur.close()
         conn.commit()
@@ -287,7 +291,7 @@ async def removeContributor(token:str, projectID:str, removedContributorID:str):
     
 """Restores a contributor previously removed from a project by the owner only"""
 @router.post('/contributor/restore')
-async def restoreContributor(token:str, projectID:str, restoredContID:str):
+async def restoreContributor(token:str, projectID:str, restoredContributorID:str):
     data = security.validateToken(token)
     if not security.validateRole(app, data['role'], 'post', 'projectmanager/project/contributor/restore'):
         raise security.unauthorized
@@ -296,7 +300,7 @@ async def restoreContributor(token:str, projectID:str, restoredContID:str):
         f.close()
     params = {
         "ContributorID": data['appdata']['contributorID'],
-        "RestoredContributorID": restoredContID,
+        "RestoredContributorID": restoredContributorID,
         "ProjectID": projectID
     }
     try:

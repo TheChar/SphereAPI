@@ -85,7 +85,5 @@ def validateRole(appTitle:str, roleTitle:str, operation:str, route:str):
 
     conn.close()
 
-    print(res)
-
     return (operation, route) in res
     
