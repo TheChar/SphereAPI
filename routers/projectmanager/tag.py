@@ -6,10 +6,180 @@ from fastapi import APIRouter
 from ...utils.dbConn import getConn
 from ...utils import security
 from psycopg2.extras import DictCursor
+import json
+from datetime import datetime
 
 app = "Project Manager"
 db = 'projectmanager'
 router = APIRouter(prefix='/tag')
+
+def parse(impStr:str):
+    queries = []
+    split = impStr.split('%')
+    types = ['str', 'float', 'int', 'char', 'bool', 'date', 'file']
+    strConstraints = ['contains', 'minlen', 'maxlen']
+    floatConstraints = ['decplaces', 'min', 'max']
+    intConstraints = ['min', 'max']
+    charConstraints = []
+    boolConstraints = []
+    dateConstraints = ['mindate', 'maxdate', 'format']
+    fileConstraints = ['type', 'maxkb']
+    for idx, item in enumerate(split):
+        if idx % 2 != 0:
+            queries.append(item)
+    print(f'Collected the queries: {queries}')
+    for query in queries:
+        print(f'Working query: {query}')
+        if not isinstance(query, str):
+            raise Exception('Not valid syntax. Query cannot be parsed as string')
+        try:
+            if len(query) > 0:
+                if ':' in query:
+                    querySplit = query.split(':')
+                    name = querySplit[0]
+                    type = querySplit[1]
+                    constraints = querySplit[2]
+                    if constraints == '':
+                        break
+                    if type not in types:
+                        raise Exception('Type is invalid')
+                    splitConstraints = constraints.split(',')
+                    match type:
+                        case 'str':
+                            for constraint in splitConstraints:
+                                splitConstraint = constraint.split('=')
+                                if splitConstraint[0] not in strConstraints:
+                                    raise Exception(f'String constraint is invalid: {constraint}')
+                                match splitConstraint[0]:
+                                    case 'contains':
+                                        try:
+                                            str(splitConstraint[1])
+                                        except:
+                                            raise Exception(f'Contains value is not a string: contains={splitConstraint[1]}')
+                                        break
+                                    case 'minlen':
+                                        try:
+                                            int(splitConstraint[1])
+                                        except:
+                                            raise Exception(f'Minlen value is not an int: minlen={splitConstraint[1]}')
+                                        break
+                                    case 'maxlen':
+                                        try:
+                                            int(splitConstraint[1])
+                                        except:
+                                            raise Exception(f'Maxlen value is not an int: maxlen={splitConstraint[1]}')
+                                        break
+                        case 'float':
+                            for constraint in splitConstraints:
+                                splitConstraint = constraint.split('=')
+                                if splitConstraint[0] not in floatConstraints:
+                                    raise Exception(f'Float constraint is invalid: {constraint}')
+                                match splitConstraint[0]:
+                                    case 'decplaces':
+                                        try:
+                                            int(splitConstraint[1])
+                                        except:
+                                            raise Exception(f'Decplaces value is not an int: decplaces={splitConstraint[1]}')
+                                        break
+                                    case 'min':
+                                        try:
+                                            float(splitConstraint[1])
+                                        except:
+                                            raise Exception(f'Min value is not a float: min={splitConstraint[1]}')
+                                        break
+                                    case 'max':
+                                        try:
+                                            float(splitConstraint[1])
+                                        except:
+                                            raise Exception(f'Max value is not a float: max={splitConstraint[1]}')
+                                        break
+                        case 'int':
+                            for constraint in splitConstraints:
+                                splitConstraint = constraint.split('=')
+                                if splitConstraint[0] not in intConstraints:
+                                    raise Exception(f'Int constraint is invalid: {constraint}')
+                                match splitConstraint[0]:
+                                    case 'min':
+                                        try:
+                                            int(splitConstraint[1])
+                                        except:
+                                            raise Exception(f'Min value is not an integer: min={splitConstraint[1]}')
+                                        break
+                                    case 'max':
+                                        try:
+                                            int(splitConstraint[1])
+                                        except:
+                                            raise Exception(f'Max value is not an integer: max={splitConstraint[1]}')
+                                        break
+                        case 'char':
+                            for constraint in splitConstraints:
+                                splitConstraint = constraint.split('=')
+                                if splitConstraint[0] not in charConstraints:
+                                    raise Exception(f'Char constraint is invalid: {constraint}')
+                        case 'bool':
+                            for constraint in splitConstraints:
+                                splitConstraint = constraint.split('=')
+                                if splitConstraint[0] not in boolConstraints:
+                                    raise Exception(f'Boolean constraint is invalid: {constraint}')
+                        case 'date':
+                            for constraint in splitConstraints:
+                                splitConstraint = constraint.split('=')
+                                if splitConstraint[0] not in dateConstraints:
+                                    raise Exception(f'Date constraint is invalid: {constraint}')
+                                match splitConstraint[0]:
+                                    case 'mindate':
+                                        try:
+                                            datetime.strptime(splitConstraint[1])
+                                        except:
+                                            raise Exception(f'Mindate value is not of type date: mindate={splitConstraint[1]}')
+                                        break
+                                    case 'maxdate':
+                                        try:
+                                            datetime.strptime(splitConstraint[1])
+                                        except:
+                                            raise Exception(f'Maxdate value is not of type date: maxdate={splitConstraint[1]}')
+                                        break
+                                    case 'format':
+                                        try:
+                                            datetime.strftime(datetime.now(), splitConstraint[1])
+                                        except:
+                                            raise Exception(f'Format value is not a valid format: format={splitConstraint[1]}')
+                        case 'file':
+                            for constraint in splitConstraints:
+                                splitConstraint = constraint.split('=')
+                                if splitConstraint[0] not in fileConstraints:
+                                    raise Exception(f'File constraint is invalid: {constraint}')
+                                match splitConstraint[0]:
+                                    case 'type':
+                                        if not splitConstraint[0][0] == '.' and not splitConstraint[0][1:].isalnum():
+                                            raise Exception(f'Type value is not a valid file extension: format={splitConstraint[1]}')
+                                        break
+                                    case 'maxkb':
+                                        try:
+                                            int(splitConstraint[1])
+                                        except:
+                                            raise Exception(f'Maxsize value is not an integer: maxkb={splitConstraint[1]}')
+                else:
+                    raise Exception(f'Not valid syntax. No : symbol found in query {query}')
+            else:
+                print('detected % symbol')
+        except Exception as e:
+            print(e)
+            raise security.something_wrong
+
+def validateImplementsSyntax(imp:str):
+    try:
+        jsonImp = json.loads(imp)
+        if not isinstance(jsonImp, dict):
+            raise Exception('Not a dictionary')
+        for key, value in jsonImp.items():
+            if not isinstance(value, str):
+                raise Exception(f'Value of {key} was not a string')
+            print(f'Parsing {value}')
+            parse(value)
+    except Exception as e:
+        print(e)
+        raise security.something_wrong
 
 """Creates a tag"""
 @router.put('/create')
@@ -27,6 +197,12 @@ async def createTag(token:str, title:str, implements:str, isPublic:str):
         "IsPublic": isPublic
     }
     try:
+        print(f'Sending {implements} to validation pipeline')
+        validateImplementsSyntax(implements)
+        if ' ' in title:
+            raise Exception('No spaces in titles')
+        if not (isPublic == 'true' or isPublic == 'false'):
+            raise Exception('isPublic must be true or false')
         conn = getConn(db)
         with conn.cursor() as cur:
             cur.execute(query, params)
@@ -55,6 +231,7 @@ async def updateTag(token:str, tagID:str, title:str, implements:str, isPublic:st
         "IsPublic": isPublic
     }
     try:
+        validateImplementsSyntax(implements)
         conn = getConn(db)
         with conn.cursor() as cur:
             cur.execute("SELECT is_tag_owner(%(ContributorID)s, %(TagID)s)", params)

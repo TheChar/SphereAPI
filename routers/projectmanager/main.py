@@ -100,6 +100,7 @@ async def initialize(token:str):
         ('put', 'projectmanager/tag/create'),
         ('post', 'projectmanager/tag/update'),
         ('post', 'projectmanager/tag/transfer'),
+        ('delete', 'projectmanager/tag/delete'),
         ('get', 'projectmanager/tag/list/byowner'),
         ('get', 'projectmanager/tag/list/byproject'),
         ('get', 'projectmanager/tag/get'),

@@ -119,7 +119,7 @@ CREATE OR REPLACE FUNCTION is_tag_owner(contributor_ID INT, tag_ID INT)
 RETURNS BOOLEAN
 AS $$
 BEGIN
-RETURN contributor_ID == (
+RETURN contributor_ID = (
     SELECT Owner
     FROM Tags
     WHERE TagID = tag_ID
@@ -143,7 +143,7 @@ CREATE OR REPLACE FUNCTION is_timeentry_owner(contributor_ID INT, timeentry_ID I
 RETURNS BOOLEAN
 AS $$
 BEGIN
-RETURN contributor_ID == (
+RETURN contributor_ID = (
     SELECT PC.ContributorID
     FROM ProjectContributor PC
     LEFT JOIN TimeEntries TE ON TE.ProjectContributorID = PC.ProjectContributorID
