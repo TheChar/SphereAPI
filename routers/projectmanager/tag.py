@@ -225,10 +225,10 @@ async def updateTag(token:str, tagID:str, title:str, implements:str, isPublic:st
         f.close()
     params = {
         "ContributorID": data['appdata']['contributorID'],
-        "Title": title,
-        "Implements": implements,
+        "Title": title if title != '' else None,
+        "Implements": implements if implements != '' else None,
         "TagID": tagID,
-        "IsPublic": isPublic
+        "IsPublic": isPublic if (isPublic != '' and (isPublic == 'true' or isPublic == 'false')) else None
     }
     try:
         validateImplementsSyntax(implements)

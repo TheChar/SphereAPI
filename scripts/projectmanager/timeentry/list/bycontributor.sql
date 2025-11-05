@@ -1,10 +1,11 @@
-SELECT TE.StartTime,
+SELECT TE.TimeEntryID,
+    TE.StartTime,
     TE.EndTime,
-    C.Name,
+    P.Title AS ProjectTitle,
     TE.Description,
     TE.Version
 FROM TimeEntries TE
 LEFT JOIN ProjectContributor PC ON PC.ProjectContributorID = TE.ProjectContributorID
-LEFT JOIN Contributors C ON PC.ContributorID = C.ContributorID
+LEFT JOIN Projects P ON PC.ProjectID = P.ProjectID
 WHERE PC.ContributorID = %(ContributorID)s
-ORDER BY StartTime DESC;
+ORDER BY TE.StartTime DESC;

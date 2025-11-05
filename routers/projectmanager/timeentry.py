@@ -24,12 +24,12 @@ async def createTimeEntry(token:str, projectID:str, description:str, version:str
         "ContributorID": data['appdata']['contributorID'],
         "ProjectID": projectID,
         "Description": description,
-        "Version": version
+        "Version": version if version != '' else None
     }
     try:
         conn = getConn(db)
         with conn.cursor() as cur:
-            cur.execute("is_contributor(%(ContributorID)s, %(ProjectID)s)", params)
+            cur.execute("SELECT is_contributor(%(ContributorID)s, %(ProjectID)s)", params)
             res = cur.fetchone()
             if not res[0]:
                 raise Exception('User cannot create time entries for projects they do not contribute to')
@@ -54,10 +54,10 @@ async def updateTimeEntry(token:str, timeEntryID:str, startTime:str, endTime:str
     params = {
         "ContributorID": data['appdata']['contributorID'],
         "TimeEntryID": timeEntryID,
-        "StartTime": startTime,
-        "EndTime": endTime,
-        "Description": description,
-        "Version": version
+        "StartTime": startTime if startTime != '' else None,
+        "EndTime": endTime if endTime != '' else None,
+        "Description": description if description != '' else None,
+        "Version": version if version != '' else None
     }
     try:
         conn = getConn(db)
@@ -120,7 +120,7 @@ async def listByProject(token:str, projectID:str):
     try:
         conn = getConn(db)
         with conn.cursor(cursor_factory=DictCursor) as cur:
-            cur.execute("is_contributor(%(ContributorID)s, %(ProjectID)s)", params)
+            cur.execute("SELECT is_contributor(%(ContributorID)s, %(ProjectID)s)", params)
             res = cur.fetchone()
             if not res['is_contributor']:
                 raise Exception("User cannot get time entries for a project they do not contribute to")
@@ -147,7 +147,7 @@ async def listByContributor(token:str):
         "ContributorID": data['appdata']['contributorID']
     }
     try:
-        conn = getConn(db)
+        conn = getConn(db)   
         with conn.cursor(cursor_factory=DictCursor) as cur:
             cur.execute(query, params)
             res = cur.fetchall()

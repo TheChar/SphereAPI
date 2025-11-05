@@ -49,8 +49,8 @@ CREATE TABLE IF NOT EXISTS ProjectContributor (
 
 CREATE TABLE IF NOT EXISTS TimeEntries (
     TimeEntryID SERIAL PRIMARY KEY,
-    StartTime DATE,
-    EndTime DATE,
+    StartTime TIMESTAMPTZ,
+    EndTime TIMESTAMPTZ,
     ProjectContributorID INT,
     Description VARCHAR(300),
     Version VARCHAR(30),
@@ -143,10 +143,11 @@ CREATE OR REPLACE FUNCTION is_timeentry_owner(contributor_ID INT, timeentry_ID I
 RETURNS BOOLEAN
 AS $$
 BEGIN
-RETURN contributor_ID = (
-    SELECT PC.ContributorID
+RETURN EXISTS (
+    SELECT 1
     FROM ProjectContributor PC
     LEFT JOIN TimeEntries TE ON TE.ProjectContributorID = PC.ProjectContributorID
+    WHERE TE.TimeEntryID = timeentry_ID AND PC.ContributorID = contributor_ID
 );
 END;
 $$ LANGUAGE plpgsql;

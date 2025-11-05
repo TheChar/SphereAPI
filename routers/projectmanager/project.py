@@ -276,9 +276,9 @@ async def removeContributor(token:str, projectID:str, removedContributorID:str):
         with conn.cursor() as cur:
             cur.execute("SELECT is_owner(%(ContributorID)s, %(ProjectID)s)", params)
             res = cur.fetchone()
-            if res[0] and projectID == removedContributorID:
+            if res[0] and data['appdata']['contributorID'] == removedContributorID:
                 raise Exception("Owner cannot remove self. Transfer project or delete.")
-            elif not res[0] and projectID != removedContributorID:
+            elif not res[0] and data['appdata']['contributorID'] != removedContributorID:
                 raise Exception("Non-owner cannot remove other contributors from project.")
             cur.execute(query, params)
             cur.close()
@@ -321,7 +321,7 @@ async def restoreContributor(token:str, projectID:str, restoredContributorID:str
 
 """Binds a tag to a project user is contributor of"""
 @router.put('/tag/bind')
-async def bindTag(token:str, projectID:str, tagID:str):
+async def bindTag(token:str, projectID:str, tagID:str, implementations:str):
     data = security.validateToken(token)
     if not security.validateRole(app, data['role'], 'put', 'projectmanager/project/tag/bind'):
         raise security.unauthorized
@@ -331,8 +331,10 @@ async def bindTag(token:str, projectID:str, tagID:str):
     params = {
         "ContributorID": data['appdata']['contributorID'],
         "TagID": tagID,
-        "ProjectID": projectID
+        "ProjectID": projectID,
+        "Implementations": implementations
     }
+    #TODO: Parse incoming implementations to make sure they are ok
     try:
         conn = getConn(db)
         with conn.cursor() as cur:

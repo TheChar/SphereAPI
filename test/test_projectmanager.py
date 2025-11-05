@@ -3,6 +3,8 @@ import pytest
 import jwt
 import os
 from dotenv import load_dotenv
+from datetime import datetime as dt, timezone
+from urllib.parse import quote
 
 load_dotenv()
 
@@ -14,6 +16,7 @@ def3ID = -1
 orgID = -1
 projectID = -1
 tagID = -1
+timeEntryID = -1
 
 def callAPI(method, path):
     url = baseurl + path
@@ -237,8 +240,49 @@ def test_noBadTagPublicitySyntax():
     assert not res.ok
 
 """Update a tag"""
+def test_updateTag():
+    global tagID
+    token = getToken('default')
+    res = callAPI('post', f'/tag/update?token={token}&tagID={tagID}&title=New Title&implements={{}}&isPublic=false')
+    parsed = res.json()
+    assert res.ok
+    assert parsed == 'Success'
+    res = callAPI('get', f'/tag/get?token={token}&tagID={tagID}')
+    parsed = res.json()[0]
+    assert isinstance(parsed, dict)
+    assert parsed['title'] == 'New Title'
+    assert parsed['implements'] == {}
+    assert parsed['ispublic'] == False
 
 """List tags (considering public scope, owner, projects, etc.)"""
+def test_noPrivateTagInList():
+    global tagID
+    token = getToken('default2')
+    res = callAPI('get', f'/tag/list/all?token={token}&page=1')
+    parsed = res.json()
+    assert res.ok
+    assert isinstance(parsed, list)
+    flag = True
+    for tag in parsed:
+        if tag['tagid'] == tagID:
+            flag = False
+    assert flag
+
+def test_PublicTagInList():
+    global tagID
+    token = getToken('default')
+    res = callAPI('post', f'/tag/update?token={token}&tagID={tagID}&title=github-url&implements={{"url":"https://github.com/%path:str:%.git"}}&isPublic=true')
+    assert res.ok
+    token = getToken('default2')
+    res = callAPI('get', f'/tag/list/all?token={token}&page=1')
+    parsed = res.json()
+    assert res.ok
+    assert isinstance(parsed, list)
+    flag = False
+    for tag in parsed:
+        if tag['tagid'] == tagID:
+            flag = True
+    assert flag
 
 """Create a project"""
 def test_createProject():
@@ -415,17 +459,126 @@ def test_restoreRemoved():
             flag = True
     assert flag
 
+"""Tag not in project yet"""
+def test_noTagInProject():
+    global tagID, projectID
+    token = getToken('default')
+    res = callAPI('get', f'/tag/list/byproject?token={token}&projectID={projectID}')
+    parsed = res.json()
+    assert res.ok
+    assert isinstance(parsed, list)
+    flag = True
+    for tag in parsed:
+        if tag['tagid'] == tagID:
+            flag = False
+    assert flag
+
 """Project binds a tag by any contributor"""
+def test_bindPublicTagByContributor():
+    global tagID, projectID
+    token = getToken('default3')
+    res = callAPI('put', f'/project/tag/bind?token={token}&projectID={projectID}&tagID={tagID}&implementations={{"url":{{"path":"TheChar/projectmanager"}}}}')
+    parsed = res.json()
+    assert res.ok
+    assert parsed == 'Success'
+    res = callAPI('get', f'/project/tag/get?token={token}&projectID={projectID}&tagID={tagID}')
+    assert res.ok
+    parsed = res.json()[0]
+    assert isinstance(parsed, dict)
+    assert parsed['tagid'] == tagID
+    assert parsed['projectid'] == projectID
+    assert parsed['implementations'] == {"url":{"path":"TheChar/projectmanager"}}
 
 """Project unbinds a tag by any contributor"""
+def test_unbindTagByContributor():
+    global tagID, projectID
+    token = getToken('default3')
+    res = callAPI('delete', f'/project/tag/unbind?token={token}&projectID={projectID}&tagID={tagID}')
+    parsed = res.json()
+    assert res.ok
+    assert parsed == 'Success'
+    res = callAPI('get', f'/tag/list/byproject?token={token}&projectID={projectID}')
+    parsed = res.json()
+    assert res.ok
+    assert isinstance(parsed, list)
+    flag = True
+    for tag in parsed:
+        if tag['tagid'] == tagID:
+            flag = False
+    assert flag
 
 """Any contributor can get the implementation of a tag"""
+#Checked in test_bindPublicTagByContributor
 
 """Create a timeentry"""
+def test_createTimeEntry():
+    global projectID, timeEntryID
+    token = getToken('default')
+    res = callAPI('put', f'/timeentry/create?token={token}&projectID={projectID}&description=Working on testing&version=')
+    parsed = res.json()
+    assert res.ok
+    assert parsed == 'Success'
+    res = callAPI('get', f'/timeentry/list/bycontributor?token={token}')
+    assert res.ok
+    parsed = res.json()
+    assert isinstance(parsed, list)
+    print(parsed)
+    target = parsed[0] #Get the most recent entry as the target
+    assert target['projecttitle'] == 'Another New Title'
+    assert target['description'] == 'Working on testing'
+    assert target['version'] == '1.0.0b'
+    assert target['endtime'] == None
+    timeEntryID = target['timeentryid']
+
+def test_noUpdateTimeEntryUnauthorized():
+    global timeEntryID
+    token = getToken('default2')
+    res = callAPI('post', f'/timeentry/update?token={token}&timeEntryID={timeEntryID}&startTime=&endTime=&description=&version=')
+    assert not res.ok
 
 """Update a timeentry"""
+def test_updateTimeEntry():
+    global timeEntryID, projectID
+    token = getToken('default')
+    now = dt.now(timezone.utc)
+    res = callAPI('post', f'/timeentry/update?token={token}&timeEntryID={timeEntryID}&startTime=&endTime={quote(now.isoformat())}&description=Some new description&version=')
+    assert res.ok
+    parsed = res.json()
+    assert parsed == 'Success'
+    res = callAPI('get', f'/timeentry/list/byproject?token={token}&projectID={projectID}')
+    assert res.ok
+    parsed = res.json()
+    assert isinstance(parsed, list)
+    for te in parsed:
+        if te['timeentryid'] == timeEntryID:
+            assert dt.fromisoformat(te['endtime']) == now
+            assert te['description'] == 'Some new description'
+            assert te['version'] == '1.0.0b'
+
+def test_noUnauthorizedTimeEntryDeletion():
+    global timeEntryID
+    token = getToken('default2')
+    res = callAPI('delete', f'/timeentry/delete?token={token}&timeEntryID={timeEntryID}')
+    assert not res.ok
 
 """Delete non-system time entries"""
+def test_deleteTimeEntry():
+    global timeEntryID
+    token = getToken('default')
+    res = callAPI('delete', f'/timeentry/delete?token={token}&timeEntryID={timeEntryID}')
+    assert res.ok
+    parsed = res.json()
+    assert parsed == 'Success'
+    flag = True
+    res = callAPI('get', f'/timeentry/list/bycontributor?token={token}')
+    assert res.ok
+    parsed = res.json()
+    assert isinstance(parsed, list)
+    flag = True
+    for te in parsed:
+        if te['timeentryid'] == timeEntryID:
+            flag = False
+    assert flag
 
 """Delete a project"""
 def test_deleteProject():
