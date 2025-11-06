@@ -249,7 +249,7 @@ async def updateTag(token:str, tagID:str, title:str, implements:str, isPublic:st
     
 """Lists tags by owner"""
 @router.get('/list/byowner')
-async def listByOwner(token:str, ownerID:str):
+async def listByOwner(token:str, ownerID:str=''):
     data = security.validateToken(token)
     if not security.validateRole(app, data['role'], 'get', 'projectmanager/tag/list/byowner'):
         raise security.unauthorized
@@ -258,7 +258,7 @@ async def listByOwner(token:str, ownerID:str):
         f.close()
     params = {
         "ContributorID": data['appdata']['contributorID'],
-        "OwnerID": ownerID
+        "OwnerID": ownerID if ownerID != '' else data['appdata']['contributorID'] #If no owner id is given, collect tags owned by caller
     }
     try:
         conn = getConn(db)
