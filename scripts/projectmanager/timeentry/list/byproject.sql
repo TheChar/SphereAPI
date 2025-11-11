@@ -3,6 +3,7 @@ SELECT TE.TimeEntryID,
     TE.EndTime,
     C.Name AS ContributorName,
     TE.Description,
+    TE.SystemGenerated,
     TE.Version
 FROM TimeEntries TE
 LEFT JOIN ProjectContributor PC ON PC.ProjectContributorID = TE.ProjectContributorID

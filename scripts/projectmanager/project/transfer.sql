@@ -31,7 +31,7 @@ UPDATE ProjectContributor
 SET IsOwner = FALSE
 WHERE ProejctID = %(ProjectID)s AND ContributorID = %(ContributorID)s;
 
-INSERT INTO TimeEntries(StartTime, ProjectContributorID, Description, Version)
+INSERT INTO TimeEntries(StartTime, ProjectContributorID, Description, SystemGenerated, Version)
 VALUES (
     NOW(),
     (SELECT ProjectContributorID
@@ -39,10 +39,11 @@ VALUES (
         WHERE ProjectID = %(ProjectID)s AND ContributorID = %(ContributorID)s;    
     ),
     'Stepped down from ownership',
+    TRUE,
     (SELECT Version FROM Projects WHERE ProjectID = %(ProjectID)s)
 );
 
-INSERT INTO TimeEntries(StartTime, ProjectContributorID, Description, Version)
+INSERT INTO TimeEntries(StartTime, ProjectContributorID, Description, SystemGenerated, Version)
 VALUES (
     NOW(),
     (SELECT ProjectContributorID
@@ -50,6 +51,7 @@ VALUES (
         WHERE ProjectID = %(ProjectID)s AND ContributorID = %(NewOwnerID)s;
     ),
     'Assumed ownership',
+    TRUE,
     (SELECT Version FROM Projects WHERE ProejctID = %(ProjectID)s)
 );
 END $$;

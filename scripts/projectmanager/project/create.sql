@@ -11,8 +11,8 @@ INSERT INTO ProjectContributor (ProjectID, ContributorID, IsRemoved, IsOwner)
 VALUES (proj_id, %(ContributorID)s, FALSE, TRUE)
 RETURNING ProjectContributorID INTO proj_con_id;
 --Insert creation record in time entries
-INSERT INTO TimeEntries (StartTime, ProjectContributorID, Description, Version)
-VALUES (NOW(), proj_con_id, CONCAT('Created ', %(Title)s), %(Version)s);
-INSERT INTO TimeEntries (StartTime, ProjectContributorID, Description, Version)
-VALUES (NOW(), proj_con_id, CONCAT('Joined ', %(Title)s), %(Version)s);
+INSERT INTO TimeEntries (StartTime, ProjectContributorID, Description, SystemGenerated, Version)
+VALUES (NOW(), proj_con_id, CONCAT('Created ', %(Title)s), TRUE, %(Version)s);
+INSERT INTO TimeEntries (StartTime, ProjectContributorID, Description, SystemGenerated, Version)
+VALUES (NOW(), proj_con_id, CONCAT('Joined ', %(Title)s), TRUE, %(Version)s);
 END $$;

@@ -53,6 +53,7 @@ CREATE TABLE IF NOT EXISTS TimeEntries (
     EndTime TIMESTAMPTZ,
     ProjectContributorID INT,
     Description VARCHAR(300),
+    SystemGenerated BOOLEAN,
     Version VARCHAR(30),
     CONSTRAINT fk_timeentry_projectcontributor
         FOREIGN KEY (ProjectContributorID)

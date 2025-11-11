@@ -2,7 +2,7 @@ SELECT P.ProjectID,
     P.Title,
     P.Version,
     P.Description,
-    COUNT(DISTINCT TimeEntryID) AS NumTimeEntries,
+    COUNT(DISTINCT TE.TimeEntryID) AS NumTimeEntries,
     (SELECT C.ContributorID
         FROM Contributors C
         LEFT JOIN ProjectContributor PC ON PC.ContributorID = C.ContributorID

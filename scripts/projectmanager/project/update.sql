@@ -9,7 +9,7 @@ SET
     Version = COALESCE(%(Version)s, Version)
 WHERE ProjectID = %(ProjectID)s;
 
-INSERT INTO TimeEntries (StartTime, ProjectContributorID, Description, Version)
+INSERT INTO TimeEntries (StartTime, ProjectContributorID, Description, SystemGenerated, Version)
 VALUES (
     NOW(),
     (
@@ -18,6 +18,7 @@ VALUES (
         WHERE ProjectID = %(ProjectID)s AND ContributorID = %(ContributorID)s
     ),
     'Updated Project Details',
+    TRUE,
     (
         SELECT Version
         FROM Projects

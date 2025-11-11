@@ -318,6 +318,35 @@ async def restoreContributor(token:str, projectID:str, restoredContributorID:str
     except Exception as e:
         print(e)
         raise security.something_wrong
+    
+"""Gets a list of contributor data for a project"""
+@router.get('/contributor/list')
+async def listProjectContributors(token:str, projectID:str):
+    data = security.validateToken(token)
+    if not security.validateRole(app, data['role'], 'get', 'projectmanager/project/contributor/list'):
+        raise security.unauthorized
+    with open('scripts/projectmanager/project/contributor/list.sql') as f:
+        query = f.read()
+        f.close()
+    params = {
+        "ContributorID": data['appdata']['contributorID'],
+        "ProjectID": projectID
+    }
+    try:
+        conn = getConn(db)
+        with conn.cursor() as cur:
+            cur.execute('SELECT is_contributor(%(ContributorID)s, %(ProjectID)s)', params)
+            res = cur.fetchone()
+            if not res[0]:
+                raise Exception("Cannot view contributor list for project not contributing to")
+            cur.execute(query, params)
+            res = cur.fetchall()
+            cur.close()
+        return res
+    except Exception as e:
+        print(e)
+        raise security.something_wrong
+
 
 """Binds a tag to a project user is contributor of"""
 @router.put('/tag/bind')
