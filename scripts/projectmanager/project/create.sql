@@ -14,5 +14,5 @@ RETURNING ProjectContributorID INTO proj_con_id;
 INSERT INTO TimeEntries (StartTime, ProjectContributorID, Description, SystemGenerated, Version)
 VALUES (NOW(), proj_con_id, CONCAT('Created ', %(Title)s), TRUE, %(Version)s);
 INSERT INTO TimeEntries (StartTime, ProjectContributorID, Description, SystemGenerated, Version)
-VALUES (NOW(), proj_con_id, CONCAT('Joined ', %(Title)s), TRUE, %(Version)s);
+VALUES (NOW(), proj_con_id, 'Joined Project', TRUE, %(Version)s);
 END $$;

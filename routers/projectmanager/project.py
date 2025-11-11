@@ -334,13 +334,14 @@ async def listProjectContributors(token:str, projectID:str):
     }
     try:
         conn = getConn(db)
-        with conn.cursor() as cur:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
             cur.execute('SELECT is_contributor(%(ContributorID)s, %(ProjectID)s)', params)
             res = cur.fetchone()
             if not res[0]:
                 raise Exception("Cannot view contributor list for project not contributing to")
             cur.execute(query, params)
             res = cur.fetchall()
+            res = [dict(r) for r in res]
             cur.close()
         return res
     except Exception as e:
