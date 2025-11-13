@@ -37,9 +37,9 @@ def getToken(type):
 def test_init():
     res = callAPI('post', '/token?username=admin&password=password&appTitle=System')
     token = res.json()
-    callAPI('put', f'/user/add?token={token}&username=testsoftware&password=password&name=Admin Test Software')
+    callAPI('put', f'/user/add?username=testsoftware&password=password&name=Admin Test Software')
     callAPI('put', f'/user/register/role?token={token}&appTitle=System&roleTitle=Admin&username=testsoftware')
-    callAPI('put', f'/user/add?token={token}&username=testsoftwaredefault&password=password&name=Default Test Software')
+    callAPI('put', f'/user/add?username=testsoftwaredefault&password=password&name=Default Test Software')
 
 """Tests app listing arriving in correct format"""
 def test_listapps():
@@ -337,7 +337,7 @@ def test_roleRouteDeleteSuccess():
 """Add a user"""
 def test_addUser():
     token = getToken('admin')
-    res = callAPI('put', f'/user/add?token={token}&username=testnew&password=somepassword&name=Some Name')
+    res = callAPI('put', f'/user/add?username=testnew&password=somepassword&name=Some Name')
     parsed = res.json()
     assert res.ok
     assert parsed == ['Success']
@@ -348,11 +348,6 @@ def test_addUser():
         if 'testnew' == user[1]:
             containsNew = True
     assert containsNew
-
-    token = getToken('default')
-    res = callAPI('put', f'/user/add?token={token}&username=testnew&password=somepassword&name=Some Name')
-    assert not res.ok
-    assert res.status_code == 401
 
 """Get new user token"""
 def test_newUserToken():

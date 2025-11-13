@@ -14,11 +14,7 @@ pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
 """Add new user, registering them automatically to the System application with basic priveleges"""
 @router.put('/add')
-async def addUser(token:str, username:str, password:str, name:str):
-    data = security.validateToken(token)
-    if not security.validateRole(data['iss'], data['role'], 'put', 'system/user/add'):
-        raise security.unauthorized
-    
+async def addUser(username:str, password:str, name:str):  
     with open('scripts/system/user/add.sql') as f:
         query = f.read()
         f.close()

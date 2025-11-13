@@ -56,9 +56,9 @@ def test_pminit():
     global def1ID, def2ID, def3ID
     res = callAPI('syspost', '/token?username=admin&password=password&appTitle=System')
     token = res.json()
-    callAPI('sysput', f'/user/add?token={token}&username=pmtestsoftware&password=password&name=PM Test Software')
-    callAPI('sysput', f'/user/add?token={token}&username=pmtestsoftware2&password=password&name=PM Test Software 2')
-    callAPI('sysput', f'/user/add?token={token}&username=pmtestsoftware3&password=password&name=PM Test Software 3')
+    callAPI('sysput', f'/user/add?username=pmtestsoftware&password=password&name=PM Test Software')
+    callAPI('sysput', f'/user/add?username=pmtestsoftware2&password=password&name=PM Test Software 2')
+    callAPI('sysput', f'/user/add?username=pmtestsoftware3&password=password&name=PM Test Software 3')
     res = callAPI('syspost', '/token?username=pmtestsoftware&password=password&appTitle=System')
     token = res.json()
     callAPI('put', f'/contributor/register?token={token}')
