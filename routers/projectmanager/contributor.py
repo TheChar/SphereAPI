@@ -196,7 +196,6 @@ async def findContributor(token:str, username:str):
             res = cur.fetchall()
             cur.close()
         res = [dict(r) for r in res][0]
-        return res
     except Exception as e:
         print(e)
         raise security.something_wrong
