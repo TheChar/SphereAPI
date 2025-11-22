@@ -202,6 +202,16 @@ def test_dissolveOrganization():
             flag = False
     assert flag
 
+"""Tests find function of users"""
+def test_findUser():
+    token = getToken('default')
+    res = callAPI('get', f'/contributor/find?token={token}&username=pmtestsoftware2')
+    assert res.ok
+    parsed = res.json()
+    assert isinstance(parsed, dict)
+    print(parsed)
+    assert False
+
 """Create a tag"""
 def test_createTag():
     global tagID, def1ID

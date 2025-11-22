@@ -76,6 +76,7 @@ async def initialize(token:str):
         ('put', 'projectmanager/contributor/organization/join'),
         ('delete', 'projectmanager/contributor/organization/leave'),
         ('get', 'projectmanager/contributor/organization/list'),
+        ('get', 'projectmanager/contributor/find'),
         ('put', 'projectmanager/organization/create'),
         ('delete', 'projectmanager/organization/dissolve'),
         ('post', 'projectmanager/organization/transfer'),

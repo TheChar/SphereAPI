@@ -1,5 +1,5 @@
 """
-Routes: /projectmanager/contributor/* => register, leave, organization/join, organization/leave, organization/list
+Routes: /projectmanager/contributor/* => register, leave, organization/join, organization/leave, organization/list, find
 """
 from fastapi import APIRouter
 from ...utils.dbConn import getConn
@@ -172,3 +172,45 @@ async def listOrganizations(token:str):
     except Exception as e:
         print(e)
         raise security.something_wrong
+    
+"""Gets any contributor by username (for searching purposes)"""
+@router.get('/find')
+async def findContributor(token:str, username:str):
+    data = security.validateToken(token)
+    if not security.validateRole(app, data['role'], 'get', 'projectmanager/contributor/find'):
+        raise security.unauthorized
+    with open('scripts/system/user/getby/userapp.sql') as f:
+        query = f.read()
+        f.close()
+    with open('scripts/projectmanager/contributor/find.sql') as f:
+        query2 = f.read()
+        f.close()
+    params = {
+        "Username": username,
+        "AppTitle": "Project Manager",
+    }
+    try:
+        conn = getConn('system')
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute(query, params)
+            res = cur.fetchall()
+            cur.close()
+        res = [dict(r) for r in res][0]
+        return res
+    except Exception as e:
+        print(e)
+        raise security.something_wrong
+    params['ContributorID'] = res["appdata"][0]["contributorID"]
+    try:
+        conn = getConn(db)
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute(query2, params)
+            res = cur.fetchall()
+            cur.close()
+        res = [dict(r) for r in res]
+        return res
+    except Exception as e:
+        print(e)
+        raise security.something_wrong
+
+    
