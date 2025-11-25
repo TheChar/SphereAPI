@@ -142,6 +142,14 @@ async def transferOwnership(token:str, projectID:str, newOwnerID:str):
     try:
         conn = getConn(db)
         with conn.cursor() as cur:
+            cur.execute("SELECT is_owner(%(ContributorID)s, %(ProjectID)s)", params)
+            res = cur.fetchone()
+            if not res[0]:
+                raise Exception("User cannot edit transfer a project they do not own")
+            cur.execute("SELECT is_contributor(%(NewOwnerID)s, %(ProjectID)s)", params)
+            res = cur.fetchone()
+            if not res[0]:
+                raise Exception("User cannot tranfer a project to someone who is not a contributor")
             cur.execute(query, params)
             cur.close()
         conn.commit()
@@ -276,10 +284,10 @@ async def removeContributor(token:str, projectID:str, removedContributorID:str):
         with conn.cursor() as cur:
             cur.execute("SELECT is_owner(%(ContributorID)s, %(ProjectID)s)", params)
             res = cur.fetchone()
-            if res[0] and data['appdata']['contributorID'] == removedContributorID:
+            if res[0] and str(data['appdata']['contributorID']) == str(removedContributorID):
                 raise Exception("Owner cannot remove self. Transfer project or delete.")
-            elif not res[0] and data['appdata']['contributorID'] != removedContributorID:
-                raise Exception("Non-owner cannot remove other contributors from project.")
+            elif not res[0] and (str(data['appdata']['contributorID']) != str(removedContributorID)):
+                raise Exception(f"Non-owner cannot remove other contributors from project. Owner state: {res[0]}. Caller: {data['appdata']['contributorID']}. Removed: {removedContributorID}")
             cur.execute(query, params)
             cur.close()
         conn.commit()
