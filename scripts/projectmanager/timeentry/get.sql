@@ -8,6 +8,5 @@ SELECT TE.TimeEntryID,
     TE.Version
 FROM TimeEntries TE
 LEFT JOIN ProjectContributor PC ON PC.ProjectContributorID = TE.ProjectContributorID
-LEFT JOIN Contributors C ON PC.ContributorID = C.ContributorID
-WHERE PC.ProjectID = %(ProjectID)s
-ORDER BY TE.TimeEntryID DESC;
+LEFT JOIN Contributors C ON C.ContributorID = PC.ContributorID
+WHERE TE.TimeEntryID = %(TimeEntryID)s

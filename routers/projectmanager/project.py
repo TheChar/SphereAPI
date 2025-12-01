@@ -47,6 +47,7 @@ async def updateProject(token:str, projectID:str, title:str, description:str, ve
     with open('scripts/projectmanager/project/update.sql') as f:
         query = f.read()
         f.close()
+    print('read in a query')
     params = {
         "ContributorID": data['appdata']['contributorID'],
         "ProjectID": projectID,
@@ -161,7 +162,7 @@ async def transferOwnership(token:str, projectID:str, newOwnerID:str):
     
 """Gets all projects worked on by caller"""
 @router.get('/list/all')
-async def listProjects(token:str):
+async def listAllProjects(token:str):
     data = security.validateToken(token)
     if not security.validateRole(app, data['role'], 'get', 'projectmanager/project/list/all'):
         raise security.unauthorized
@@ -169,20 +170,20 @@ async def listProjects(token:str):
         query = f.read()
         f.close()
     params = {
-        "ContributorID": data['appdata']['contributorID'],
+        "ContributorID": data['appdata']['contributorID']
     }
-    try:
-        conn = getConn(db)
-        with conn.cursor(cursor_factory=DictCursor) as cur:
-            cur.execute(query, params)
-            res = cur.fetchall()
-            cur.close()
-        conn.close()
+    # try:
+    conn = getConn(db)
+    with conn.cursor(cursor_factory=DictCursor) as cur:
+        cur.execute(query, params)
+        res = cur.fetchall()
         res = [dict(r) for r in res]
-        return res
-    except Exception as e:
-        print(e)
-        raise security.something_wrong
+        cur.close()
+    conn.close()
+    return res
+    # except Exception as e:
+    #     print(e)
+    #     raise security.something_wrong
     
 """Gets all projects owned by caller"""
 @router.get('/list/byowner')

@@ -1,5 +1,5 @@
 """
-Routes: /projectmanager/timeentry/* => create, update, delete, list/byproject, list/bycontributor
+Routes: /projectmanager/timeentry/* => create, update, delete, get, list/byproject, list/bycontributor
 """
 
 from fastapi import APIRouter
@@ -100,6 +100,36 @@ async def deleteEntry(token:str, timeEntryID:str):
         conn.commit()
         conn.close()
         return "Success"
+    except Exception as e:
+        print(e)
+        raise security.something_wrong
+    
+"""Get a Time Entry"""
+@router.get('/get')
+async def getTimeEntry(token:str, timeEntryID:str):
+    data = security.validateToken(token)
+    if not security.validateRole(app, data['role'], 'get', 'projectmanager/timeentry/get'):
+        raise security.unauthorized
+    with open('scripts/projectmanager/timeentry/get.sql') as f:
+        query = f.read()
+        f.close()
+    params = {
+        "ContributorID": data['appdata']['contributorID'],
+        "TimeEntryID": timeEntryID,
+    }
+    try:
+        conn = getConn(db)
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute("SELECT is_timeentry_owner(%(ContributorID)s, %(TimeEntryID)s)", params)
+            res = cur.fetchone()
+            if not res['is_timeentry_owner']:
+                raise Exception('User cannot get timeEntry details they do not own')
+            cur.execute(query, params)
+            res = cur.fetchall()
+            res = [dict(r) for r in res]
+            cur.close()
+        conn.close()
+        return res
     except Exception as e:
         print(e)
         raise security.something_wrong
