@@ -5,7 +5,7 @@ Routes: /system/user/* => add, changePassword, changeName, changeExpMins, delete
 from fastapi import APIRouter
 from ...utils import security
 from ...utils.dbConn import getConn
-from datetime import datetime as dt
+from datetime import datetime as dt, timezone
 from passlib.context import CryptContext
 
 router = APIRouter(prefix='/user')
@@ -24,7 +24,7 @@ async def addUser(username:str, password:str, name:str):
         "HashedPassword": pwd_context.encrypt(password),
         "Name": name,
         "ExpMins": 60,
-        "JoinDate": dt.now()
+        "JoinDate": dt.now(timezone.utc)
     }
     
     try:
@@ -180,7 +180,7 @@ async def registerOnApp(token:str, appTitle:str, roleTitle:str, appData:str, use
         "AppTitle": appTitle,
         "Username": username,
         "RoleTitle": roleTitle,
-        "JoinDate": dt.now(),
+        "JoinDate": dt.now(timezone.utc),
         "Data": appData
     }
     

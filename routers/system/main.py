@@ -3,7 +3,7 @@ from ..system import application, database, role, user
 from ...utils.dbConn import getConn
 from ...utils import security
 from passlib.context import CryptContext
-from datetime import datetime as dt
+from datetime import datetime as dt, timezone
 
 router = APIRouter(
     prefix='/system'
@@ -156,7 +156,7 @@ async def initialize():
         "HashedPassword": pwd_context.hash('password'),
         "Name": "Admin",
         "ExpMins": 120,
-        "JoinDate": dt.now()
+        "JoinDate": dt.now(timezone.utc)
     }
 
     with conn.cursor() as cur:

@@ -11,7 +11,9 @@ WHERE ProjectID = %(ProjectID)s;
 
 INSERT INTO TimeEntries (StartTime, ProjectContributorID, Description, SystemGenerated, Version)
 VALUES (
-    NOW(),
+    (
+        SELECT NOW() AT TIME ZONE 'UTC'
+    ),
     (
         SELECT ProjectContributorID
         FROM ProjectContributor

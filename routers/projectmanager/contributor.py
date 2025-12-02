@@ -5,6 +5,7 @@ from fastapi import APIRouter
 from ...utils.dbConn import getConn
 from ...utils import security
 from datetime import datetime as dt
+from datetime import timezone
 import json
 from psycopg2.extras import DictCursor
 
@@ -33,7 +34,7 @@ async def registerUser(token:str):
         "Name": "Error",
         "AppTitle": app,
         "RoleTitle": "Default",
-        "JoinDate": dt.now(),
+        "JoinDate": dt.now(timezone.utc),
         "Data": json.dumps({"contributorID": "-1"})
     }
     try:

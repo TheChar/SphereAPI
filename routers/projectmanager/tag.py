@@ -7,7 +7,7 @@ from ...utils.dbConn import getConn
 from ...utils import security
 from psycopg2.extras import DictCursor
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 
 app = "Project Manager"
 db = 'projectmanager'
@@ -141,7 +141,7 @@ def parse(impStr:str):
                                         break
                                     case 'format':
                                         try:
-                                            datetime.strftime(datetime.now(), splitConstraint[1])
+                                            datetime.strftime(datetime.now(timezone.utc), splitConstraint[1])
                                         except:
                                             raise Exception(f'Format value is not a valid format: format={splitConstraint[1]}')
                         case 'file':

@@ -5,7 +5,10 @@ SET IsRemoved = FALSE
 WHERE ProjectID = %(ProjectID)s AND ContributorID = %(RestoredContributorID)s;
 
 INSERT INTO TimeEntries (StartTime, ProjectContributorID, Description, SystemGenerated, Version)
-VALUES (NOW(), 
+VALUES (
+    (
+        SELECT NOW() AT TIME ZONE 'UTC'
+    ), 
     (SELECT ProjectContributorID 
         FROM ProjectContributor
         WHERE ProjectID = %(ProjectID)s AND ContributorID = %(RestoredContributorID)s
