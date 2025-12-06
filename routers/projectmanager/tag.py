@@ -305,7 +305,7 @@ async def listByProject(token:str, projectID:str):
     
 """Lists all public tags created by all users"""
 @router.get('/list/all')
-async def getAllPublicTags(token:str, page:str):
+async def getAllPublicTags(token:str, page:str, searchBy:str, sortBy:str): #TODO: A more secure method of passing in search queries is needed
     data = security.validateToken(token)
     if not security.validateRole(app, data['role'], 'get', 'projectmanager/tag/list/all'):
         raise security.unauthorized
@@ -314,8 +314,24 @@ async def getAllPublicTags(token:str, page:str):
         f.close()
     params = {
         "ContributorID": data['appdata']['contributorID'],
-        "Page": page
+        "Page": page,
+        "SearchBy": searchBy if searchBy != '' else None
     }
+    match sortBy:
+        case 'leastUses':
+            query = query.replace('{ORDER_BY}', 'NumImplementations ASC')
+        case 'mostUses':
+            query = query.replace('{ORDER_BY}', 'NumImplementations DESC')
+        case 'title':
+            query = query.replace('{ORDER_BY}', 'T.Title ASC')
+        case 'titleD':
+            query = query.replace('{ORDER_BY}', 'T.Title DESC')
+        case 'owner':
+            query = query.replace('{ORDER_BY}', 'C.Name ASC')
+        case 'ownerD':
+            query = query.replace('{ORDER_BY}', 'C.Name DESC')
+        case _:
+            raise security.something_wrong
     try:
         conn = getConn(db)
         with conn.cursor(cursor_factory=DictCursor) as cur:

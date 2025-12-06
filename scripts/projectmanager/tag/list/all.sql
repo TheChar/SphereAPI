@@ -1,14 +1,20 @@
 SELECT T.TagID,
     T.Title,
     T.Implements::jsonb,
+    T.IsPublic,
     C.Name AS OwnerName,
-    C.ContributorID AS OwnerID,
+    T.Owner,
     COUNT(DISTINCT ProjectTagID) AS NumImplementations
 FROM Tags T
 LEFT JOIN Contributors C ON T.Owner = C.ContributorID
 LEFT JOIN ProjectTag PT ON T.TagID = PT.TagID
 WHERE IsPublic = TRUE
-GROUP BY T.TagID, T.Title, T.Implements::jsonb, OwnerName, OwnerID
-ORDER BY T.Title DESC
+    AND (
+        %(SearchBy)s IS NULL
+        OR T.Title ILIKE '%%' || %(SearchBy)s || '%%'
+        OR C.Name ILIKE '%%' || %(SearchBy)s || '%%'
+    )
+GROUP BY T.TagID, T.Title, T.Implements::jsonb, T.IsPublic, OwnerName, T.Owner
+ORDER BY {ORDER_BY}
 LIMIT 30
 OFFSET (30 * (%(Page)s - 1));
