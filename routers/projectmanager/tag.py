@@ -13,6 +13,114 @@ app = "Project Manager"
 db = 'projectmanager'
 router = APIRouter(prefix='/tag')
 
+def validateImplementation(input:str):
+    allowedConstraints = {
+        's': [{'c':str}, {'mi':int}, {'ma':int}], #String may be constrained by "contains", "minlength", and "maxlength"
+        'fl': [{'d':int}, {'mi':float}, {'ma':float}], #Float may be constrained by "decimal places", "minvalue", and "maxvalue"
+        'i': [{'mi':int}, {'ma':int}], #Int may be constrained by "minvalue" and "maxvalue"
+        'c': [{'c':str}], #Char may be constrained by case
+        'b': [], #Bool has no constraints
+        'ts': [{'a':str}, {'b':str}], #Timestamp may be constrained by "isAfter" and "isBefore"
+        'fi': [{'e':str}, {'s':int}], #Timestamp may be constrained by "extension" and "maxSize"
+        'a': [{'mi':int}, {'ma':int}, {'o':dict}], #Array may be constrained by "minObjs" and "maxObjs" and MUST be constrained by "objType"
+        'ta': [{'t':int}], #Tag MUST be constrained by "tagID" (a reference to another tag in the system)
+        'd': [{'o':list}], #Dropdown MUST be constrained by "options" (an array of level-1 objects)
+    }
+
+    try:
+
+        data = json.loads(input) #implementation must be valid json structure
+        if not isinstance(data, dict): #implementation must be a top-level object, not an array
+            return "not object at top level"
+        for component in data:
+            if not (isinstance(component, str) and component.isalnum()): #component names must be alphanumeric
+                return "Not alphanumeric component name (level-1)"
+            if not isinstance(data[component], dict): #level 2 must be an object, not an array
+                return f"Level 2 is not object. Was {type(data[component])}"
+            if "t" not in data[component] and "c" not in data[component]: #level 2 object must contain a type, and a constraints field
+                return "Level 2 does not contain t and c"
+            for key in data[component]: #level 2 object may not contain anything other than type and constraints fields
+                if not (isinstance(key, str) and (key != "t" or key != "c")):
+                    return "Level 2 contains fields other than t and c"
+            #Type must be string, float, int, char, bool, timestamp, file, array, tag, or dropdown
+            t = data[component]['t']
+            if t != 's' and t != 'fl' and t != 'i' and t != 'c' and t != 'b' and t != 'ts' and t != 'fi' and t != 'a' and t != 'ta' and t != 'd':
+                return "Level 2 type is not approved format"
+            if not isinstance(data[component]['c'], list): #Constraints must be in the form of an array
+                return "Level 2 constraints is not an array"
+            constraintCounts = {}
+            for idx, constraint in enumerate(data[component]['c']):
+                if not isinstance(constraint, dict): #Constraint must be an object
+                    return "A constraint in the array is not formatted as an object"
+                if len(constraint) != 1: #There should be exactly one field in the constraint object
+                    return "There should only be one field in the constraint objects"
+                constraintName = list(constraint.keys())[0]
+                if(constraintName in constraintCounts):
+                    constraintCounts[constraintName] += 1
+                else:
+                    constraintCounts[constraintName] = 1
+                flag = False
+                #Constraint must be in the allowlist for the data type
+                for allowedConstraint in allowedConstraints[t]:
+                    if isinstance(allowedConstraint, dict) and constraintName == list(allowedConstraint.keys())[0]:
+                        flag = True
+                        dataType = list(allowedConstraint.values())[0]
+                if not flag:
+                    return f"Constraint was not in the whitelist for its type: {t}: {constraintName}"
+                #Constraint must meet data type standard
+                if not isinstance(data[component]['c'][idx][constraintName], dataType):
+                    return f"Constraint was wrong type: {t}:{constraintName}:{type(data[component]['c'][idx][constraintName])} should be {str(dataType)}"
+            #There should be no duplicate constraints
+            for x in constraintCounts:
+                if constraintCounts[x] > 1:
+                    return "No duplicate constraints allowed"
+            #Some constraints are required
+            try:
+                if t == 'a' and constraintCounts['o'] != 1:
+                    return "Array must contain one o constraint"
+            except KeyError as e:
+                return "Array must contain o constraint"
+            try:
+                if t == 'ta' and constraintCounts ['t'] != 1:
+                    return "Tag must contain one t constraint"
+            except KeyError as e:
+                return "Tag must contain t constraint"
+            try:
+                if t == 'd' and constraintCounts['o'] != 1:
+                    return "Dropdown must contain one o constraint"
+            except KeyError as e:
+                return "Dropdown must contain o constraint"
+            
+            #Special parsing for arrays
+            if t == 'a':
+                result = validateImplementation(json.dumps(data[component]['c'][0]))
+                if result != "Success":
+                    return f"Failed in array with {result}"
+
+            #Special parsing for dropdowns
+            #Dropdowns contain an options field which is an array of top-level implementation objects and can therefore be parsed recursively
+            if t == 'd':
+                if not isinstance(data[component]['c'][0]['o'], list):
+                    return "Dropdown objects is not a list"
+                for option in data[component]['c'][0]['o']:
+                    if not isinstance(option, dict):
+                        return "Dropdown option is not an object"
+                    dependencies = list(option.values())[0]
+                    if not isinstance(dependencies, list):
+                        return "Dropdown dependencies is not a list"
+                    for dependency in dependencies:
+                        if not isinstance(dependency, dict):
+                            return "Dropdown dependency is not an object"
+                        result = validateImplementation(json.dumps(dependency))
+                        if result != "Success":
+                            return f"Failed in dropdown with {result}"
+    except KeyError as e:
+        return "Missing critical component"
+    return "Success"
+
+
+
+
 def parse(impStr:str):
     queries = []
     split = impStr.split('%')
