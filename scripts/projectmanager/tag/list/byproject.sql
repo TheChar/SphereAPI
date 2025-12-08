@@ -1,6 +1,7 @@
 SELECT T.TagID,
     T.Title,
-    PT.Implementations,
+    T.Implements::jsonb,
+    PT.Implementations::jsonb,
     T.Owner,
     T.IsPublic,
     C.Name AS OwnerName
