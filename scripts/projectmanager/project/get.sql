@@ -2,6 +2,11 @@ SELECT P.ProjectID,
     P.Title,
     P.Version,
     P.Description,
+    P.Cost,
+    P.HoursRequired,
+    P.Marketability,
+    P.UnitValue,
+    P.Interest,
     COUNT(DISTINCT TE.TimeEntryID) AS NumTimeEntries,
     (SELECT C.ContributorID
         FROM Contributors C

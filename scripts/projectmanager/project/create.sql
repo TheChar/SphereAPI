@@ -3,8 +3,8 @@ DECLARE proj_id INT;
     proj_con_id INT;
 BEGIN
 --Create project
-INSERT INTO Projects (Title, Description, Version)
-VALUES (%(Title)s, %(Description)s, %(Version)s)
+INSERT INTO Projects (Title, Description, Version, Cost, HoursRequired, Marketability, UnitValue, Interest)
+VALUES (%(Title)s, %(Description)s, %(Version)s, 0, 0, 0, 0, 0)
 RETURNING ProjectID INTO proj_id;
 --Bind owner to project
 INSERT INTO ProjectContributor (ProjectID, ContributorID, IsRemoved, IsOwner)

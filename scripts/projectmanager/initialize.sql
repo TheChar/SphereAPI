@@ -28,7 +28,12 @@ CREATE TABLE IF NOT EXISTS Projects (
     ProjectID SERIAL PRIMARY KEY,
     Title VARCHAR(100),
     Version VARCHAR(30),
-    Description VARCHAR(300)
+    Description VARCHAR(300),
+    Cost INT CHECK (cost >= 0),
+    HoursRequired INT CHECK (HoursRequired >= 0),
+    Marketability INT CHECK (Marketability >= 0 AND Marketability <= 100),
+    UnitValue INT CHECK (UnitValue >= 0),
+    Interest INT CHECK (Interest >= 0 AND Interest <= 5)
 );
 
 CREATE TABLE IF NOT EXISTS ProjectContributor (

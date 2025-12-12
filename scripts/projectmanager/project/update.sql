@@ -6,7 +6,12 @@ UPDATE Projects
 SET
     Title = COALESCE(%(Title)s, Title),
     Description = COALESCE(%(Description)s, Description),
-    Version = COALESCE(%(Version)s, Version)
+    Version = COALESCE(%(Version)s, Version),
+    Cost = COALESCE(%(Cost)s, Cost),
+    HoursRequired = COALESCE(%(HoursRequired)s, HoursRequired),
+    Marketability = COALESCE(%(Marketability)s, Marketability),
+    UnitValue = COALESCE(%(UnitValue)s, UnitValue),
+    Interest = COALESCE(%(Interest)s, Interest)
 WHERE ProjectID = %(ProjectID)s;
 
 INSERT INTO TimeEntries (StartTime, ProjectContributorID, Description, SystemGenerated, Version)

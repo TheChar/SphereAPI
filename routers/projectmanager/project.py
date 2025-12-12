@@ -40,7 +40,7 @@ async def createProject(token:str, title:str, description:str, version:str):
     
 """Updates a project if caller owns it"""
 @router.post('/update')
-async def updateProject(token:str, projectID:str, title:str, description:str, version:str):
+async def updateProject(token:str, projectID:str, title:str, description:str, version:str, cost:str, hoursRequired:str, marketability:str, unitValue:str, interest:str):
     data = security.validateToken(token)
     if not security.validateRole(app, data['role'], 'post', 'projectmanager/project/update'):
         raise security.unauthorized
@@ -53,7 +53,12 @@ async def updateProject(token:str, projectID:str, title:str, description:str, ve
         "ProjectID": projectID,
         "Title": title if title != '' else None,
         "Description": description if description != '' else None,
-        "Version": version if version != '' else None
+        "Version": version if version != '' else None,
+        "Cost": cost if cost != '' else None,
+        "HoursRequired": hoursRequired if hoursRequired != '' else None,
+        "Marketability": marketability if marketability != '' else None,
+        "UnitValue": unitValue if unitValue != '' else None,
+        "Interest": interest if interest != '' else None
     }
     try:
         conn = getConn(db)

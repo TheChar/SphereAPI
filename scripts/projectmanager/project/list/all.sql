@@ -2,6 +2,11 @@ SELECT P.ProjectID,
     P.Title,
     P.Version,
     P.Description,
+    P.Cost,
+    P.HoursRequired,
+    P.Marketability,
+    P.UnitValue,
+    P.Interest,
     (
         SELECT TE.StartTime
         FROM TimeEntries TE

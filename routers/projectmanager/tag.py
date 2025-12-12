@@ -33,7 +33,7 @@ def validateImplementation(input:str):
         if not isinstance(data, dict): #implementation must be a top-level object, not an array
             raise Exception("not object at top level")
         for component in data:
-            if not (isinstance(component, str) and component.isalnum()): #component names must be alphanumeric
+            if not (isinstance(component, str) and (component.replace(' ', '').isalnum())): #component names must be alphanumeric
                 raise Exception("Not alphanumeric component name (level-1)")
             if not isinstance(data[component], dict): #level 2 must be an object, not an array
                 raise Exception(f"Level 2 is not object. Was {type(data[component])}")
@@ -94,7 +94,7 @@ def validateImplementation(input:str):
             #Special parsing for arrays
             if t == 'a':
                 result = validateImplementation(json.dumps(data[component]['c'][0]))
-                if result != "Success":
+                if not result:
                     raise Exception(f"Failed in array with {result}")
 
             #Special parsing for dropdowns
