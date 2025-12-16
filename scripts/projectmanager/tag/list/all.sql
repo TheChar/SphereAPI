@@ -8,7 +8,7 @@ SELECT T.TagID,
 FROM Tags T
 LEFT JOIN Contributors C ON T.Owner = C.ContributorID
 LEFT JOIN ProjectTag PT ON T.TagID = PT.TagID
-WHERE IsPublic = TRUE
+WHERE (C.ContributorID = %(ContributorID)s OR (C.ContributorID != %(ContributorID)s AND T.IsPublic = TRUE))
     AND (
         %(SearchBy)s IS NULL
         OR T.Title ILIKE '%%' || %(SearchBy)s || '%%'

@@ -112,7 +112,7 @@ def validateImplementation(input:str):
                         if not isinstance(dependency, dict):
                             raise Exception("Dropdown dependency is not an object")
                         result = validateImplementation(json.dumps(dependency))
-                        if result != "Success":
+                        if not result:
                             raise Exception(f"Failed in dropdown with {result}")
     except KeyError as e:
         print("Missing critical component")
