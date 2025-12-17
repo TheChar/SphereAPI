@@ -396,6 +396,36 @@ async def bindTag(token:str, projectID:str, tagID:str, implementations:str):
         print(e)
         raise security.something_wrong
     
+@router.put('/tag/implement')
+async def implementTag(token:str, projectID:str, tagID:str, implementations:str):
+    data = security.validateToken(token)
+    if not security.validateRole(app, data['role'], 'put', 'projectmanager/project/tag/implement'):
+        raise security.unauthorized
+    with open('scripts/projectmanager/project/tag/implements.sql') as f:
+        query = f.read()
+        f.close()
+    params = {
+        "ContributorID": data['appdata']['contributorID'],
+        "ProjectID": projectID,
+        "TagID": tagID,
+        "Implementations": implementations
+    }
+    try:
+        conn = getConn(db)
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute("SELECT is_contributor(%(ContributorID)s, %(ProjectID)s)", params)
+            res = cur.fetchone()
+            if not res[0]:
+                raise Exception('User cannot edit a project they do not contribute to')
+            cur.execute(query, params)
+            cur.close()
+        conn.commit()
+        conn.close()
+        return "Success"
+    except Exception as e:
+        print(e)
+        raise security.something_wrong
+    
 """Unbinds a tag from a project"""
 @router.delete('/tag/unbind')
 async def unbindTag(token:str, projectID:str, tagID:str):
