@@ -96,6 +96,7 @@ async def initialize(token:str):
         ('put', 'projectmanager/project/tag/bind'),
         ('delete', 'projectmanager/project/tag/unbind'),
         ('get', 'projectmanager/project/tag/get'),
+        ('post', 'projectmanager/project/tag/implement'),
         ('put', 'projectmanager/timeentry/create'),
         ('post', 'projectmanager/timeentry/update'),
         ('delete', 'projectmanager/timeentry/delete'),
@@ -110,7 +111,7 @@ async def initialize(token:str):
         ('get', 'projectmanager/tag/list/byproject'),
         ('get', 'projectmanager/tag/list/all'),
         ('get', 'projectmanager/tag/get'),
-        ('get', 'projectmanager/tag/project/get')
+        ('get', 'projectmanager/tag/project/get'),
     ]
 
     with open('scripts/system/role/route/bind.sql') as f:

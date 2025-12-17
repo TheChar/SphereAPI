@@ -396,10 +396,10 @@ async def bindTag(token:str, projectID:str, tagID:str, implementations:str):
         print(e)
         raise security.something_wrong
     
-@router.put('/tag/implement')
+@router.post('/tag/implement')
 async def implementTag(token:str, projectID:str, tagID:str, implementations:str):
     data = security.validateToken(token)
-    if not security.validateRole(app, data['role'], 'put', 'projectmanager/project/tag/implement'):
+    if not security.validateRole(app, data['role'], 'post', 'projectmanager/project/tag/implement'):
         raise security.unauthorized
     with open('scripts/projectmanager/project/tag/implements.sql') as f:
         query = f.read()
