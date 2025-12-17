@@ -401,7 +401,7 @@ async def implementTag(token:str, projectID:str, tagID:str, implementations:str)
     data = security.validateToken(token)
     if not security.validateRole(app, data['role'], 'post', 'projectmanager/project/tag/implement'):
         raise security.unauthorized
-    with open('scripts/projectmanager/project/tag/implements.sql') as f:
+    with open('scripts/projectmanager/project/tag/implement.sql') as f:
         query = f.read()
         f.close()
     params = {
